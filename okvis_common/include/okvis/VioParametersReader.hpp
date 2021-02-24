@@ -102,13 +102,14 @@ class VioParametersReader{
 
   /// @brief Struct that contains all the camera calibration information.
   struct CameraCalibration {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     okvis::kinematics::Transformation T_SC;   ///< Transformation from camera to sensor (IMU) frame.
     Eigen::Vector2d imageDimension;           ///< Image dimension. [pixels]
     Eigen::VectorXd distortionCoefficients;   ///< Distortion Coefficients.
     Eigen::Vector2d focalLength;              ///< Focal length.
     Eigen::Vector2d principalPoint;           ///< Principal point.
     std::string distortionType;               ///< Distortion type. ('radialtangential' 'plumb_bob' 'equdistant')
+  public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   /// If readConfigFile() has been called at least once this is true

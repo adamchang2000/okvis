@@ -564,8 +564,9 @@ class Estimator : public VioBackendInterface
   mutable std::mutex statesMutex_;  ///< Regulate access of landmarksMap_.
 
   // parameters
-  std::vector<okvis::ExtrinsicsEstimationParameters,
-      Eigen::aligned_allocator<okvis::ExtrinsicsEstimationParameters> > extrinsicsEstimationParametersVec_; ///< Extrinsics parameters.
+  // std::vector<okvis::ExtrinsicsEstimationParameters,
+  //     Eigen::aligned_allocator<okvis::ExtrinsicsEstimationParameters> > extrinsicsEstimationParametersVec_; ///< Extrinsics parameters.
+  std::vector<okvis::ExtrinsicsEstimationParameters> extrinsicsEstimationParametersVec_;
   std::vector<okvis::ImuParameters, Eigen::aligned_allocator<okvis::ImuParameters> > imuParametersVec_; ///< IMU parameters.
 
   // loss function for reprojection errors

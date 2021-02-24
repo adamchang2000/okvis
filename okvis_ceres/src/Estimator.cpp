@@ -61,6 +61,7 @@ Estimator::Estimator(
       huberLossFunctionPtr_(new ::ceres::HuberLoss(1)),
       marginalizationResidualId_(0)
 {
+  extrinsicsEstimationParametersVec_.reserve(2);
 }
 
 // The default constructor.
@@ -81,7 +82,16 @@ Estimator::~Estimator()
 int Estimator::addCamera(
     const ExtrinsicsEstimationParameters & extrinsicsEstimationParameters)
 {
+  std::cout << extrinsicsEstimationParameters.sigma_absolute_translation << std::endl;
+  printf("lets guess, we broke here\n");
+  fflush(stdout);
+
   extrinsicsEstimationParametersVec_.push_back(extrinsicsEstimationParameters);
+
+  printf("pushing back..\n");
+  std::cout << extrinsicsEstimationParametersVec_.size() << std::endl;
+  fflush(stdout);
+
   return extrinsicsEstimationParametersVec_.size() - 1;
 }
 

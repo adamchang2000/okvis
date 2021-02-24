@@ -96,6 +96,7 @@ ThreadedKFVio::ThreadedKFVio(okvis::VioParameters& parameters)
 
 // Initialises settings and calls startThreads().
 void ThreadedKFVio::init() {
+
   assert(parameters_.nCameraSystem.numCameras() > 0);
   numCameras_ = parameters_.nCameraSystem.numCameras();
   numCameraPairs_ = 1;
@@ -108,13 +109,21 @@ void ThreadedKFVio::init() {
   lastAddedStateTimestamp_ = okvis::Time(0.0) + temporal_imu_data_overlap;  // s.t. last_timestamp_ - overlap >= 0 (since okvis::time(-0.02) returns big number)
 
   estimator_.addImu(parameters_.imu);
+
+  printf("num cameras? %d\n", numCameras_);
+  fflush(stdout);
+
   for (size_t i = 0; i < numCameras_; ++i) {
     // parameters_.camera_extrinsics is never set (default 0's)...
     // do they ever change?
+    printf("adding a camera!\n");
+    fflush(stdout);
     estimator_.addCamera(parameters_.camera_extrinsics);
     cameraMeasurementsReceived_.emplace_back(
           std::shared_ptr<threadsafe::ThreadSafeQueue<std::shared_ptr<okvis::CameraMeasurement> > >
           (new threadsafe::ThreadSafeQueue<std::shared_ptr<okvis::CameraMeasurement> >()));
+    printf("camera added\n");
+    fflush(stdout);
   }
   
   // set up windows so things don't crash on Mac OS
@@ -674,7 +683,16 @@ void ThreadedKFVio::imuConsumerLoop() {
           start = okvis::Time(0, 0);
         end = &data.timeStamp;
       }
+      std::cout << "imumeasure size " << imuMeasurements_.size() << std::endl;
+      if (imuMeasurements_.size() > 0) {
+        std::cout << imuMeasurements_.back().timeStamp << std::endl;
+        std::cout << imuMeasurements_.front().timeStamp << std::endl;
+        std::cout << data.timeStamp << std::endl;
+      }
+      fflush(stdout);
       imuMeasurements_.push_back(data);
+      printf("got past this pushback\n");
+      fflush(stdout);
     }  // unlock _imuMeasurements_mutex
 
     // notify other threads that imu data with timeStamp is here.
@@ -694,9 +712,13 @@ void ThreadedKFVio::imuConsumerLoop() {
       result.omega_S = imuMeasurements_.back().measurement.gyroscopes
           - speedAndBiases_propagated_.segment<3>(3);
       for (size_t i = 0; i < parameters_.nCameraSystem.numCameras(); ++i) {
+        printf("right before the push back 2\n");
+        fflush(stdout);
         result.vector_of_T_SCi.push_back(
             okvis::kinematics::Transformation(
                 *parameters_.nCameraSystem.T_SC(i)));
+        printf("got past the second pushback\n");
+        fflush(stdout);
       }
       result.onlyPublishLandmarks = false;
       optimizationResults_.PushNonBlockingDroppingIfFull(result,1);
