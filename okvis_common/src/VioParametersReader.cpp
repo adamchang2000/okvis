@@ -330,7 +330,7 @@ void VioParametersReader::readConfigFile(const std::string& filename) {
   }
 
   // camera calibration
-  std::vector<CameraCalibration,Eigen::aligned_allocator<CameraCalibration>> calibrations;
+  std::vector<CameraCalibration> calibrations;
   if(!getCameraCalibration(calibrations, file))
     LOG(FATAL) << "Did not find any calibration!";
 
@@ -347,17 +347,17 @@ void VioParametersReader::readConfigFile(const std::string& filename) {
           std::shared_ptr<const okvis::cameras::CameraBase>(
               new okvis::cameras::PinholeCamera<
                   okvis::cameras::EquidistantDistortion>(
-                  calibrations[i].imageDimension[0],
-                  calibrations[i].imageDimension[1],
-                  calibrations[i].focalLength[0],
-                  calibrations[i].focalLength[1],
-                  calibrations[i].principalPoint[0],
-                  calibrations[i].principalPoint[1],
+                  *(calibrations[i].imageDimension)[0],
+                  *(calibrations[i].imageDimension)[1],
+                  *(calibrations[i].focalLength)[0],
+                  *(calibrations[i].focalLength)[1],
+                  *(calibrations[i].principalPoint)[0],
+                  *(calibrations[i].principalPoint)[1],
                   okvis::cameras::EquidistantDistortion(
-                    calibrations[i].distortionCoefficients[0],
-                    calibrations[i].distortionCoefficients[1],
-                    calibrations[i].distortionCoefficients[2],
-                    calibrations[i].distortionCoefficients[3])/*, id ?*/)),
+                    *(calibrations[i].distortionCoefficients)[0],
+                    *(calibrations[i].distortionCoefficients)[1],
+                    *(calibrations[i].distortionCoefficients)[2],
+                    *(calibrations[i].distortionCoefficients)[3])/*, id ?*/)),
           okvis::cameras::NCameraSystem::Equidistant/*, computeOverlaps ?*/);
       std::stringstream s;
       s << calibrations[i].T_SC.T();
@@ -370,17 +370,17 @@ void VioParametersReader::readConfigFile(const std::string& filename) {
           std::shared_ptr<const okvis::cameras::CameraBase>(
               new okvis::cameras::PinholeCamera<
                   okvis::cameras::RadialTangentialDistortion>(
-                  calibrations[i].imageDimension[0],
-                  calibrations[i].imageDimension[1],
-                  calibrations[i].focalLength[0],
-                  calibrations[i].focalLength[1],
-                  calibrations[i].principalPoint[0],
-                  calibrations[i].principalPoint[1],
+                  *(calibrations[i].imageDimension)[0],
+                  *(calibrations[i].imageDimension)[1],
+                  *(calibrations[i].focalLength)[0],
+                  *(calibrations[i].focalLength)[1],
+                  *(calibrations[i].principalPoint)[0],
+                  *(calibrations[i].principalPoint)[1],
                   okvis::cameras::RadialTangentialDistortion(
-                    calibrations[i].distortionCoefficients[0],
-                    calibrations[i].distortionCoefficients[1],
-                    calibrations[i].distortionCoefficients[2],
-                    calibrations[i].distortionCoefficients[3])/*, id ?*/)),
+                    *(calibrations[i].distortionCoefficients)[0],
+                    *(calibrations[i].distortionCoefficients)[1],
+                    *(calibrations[i].distortionCoefficients)[2],
+                    *(calibrations[i].distortionCoefficients)[3])/*, id ?*/)),
           okvis::cameras::NCameraSystem::RadialTangential/*, computeOverlaps ?*/);
       std::stringstream s;
       s << calibrations[i].T_SC.T();
@@ -393,21 +393,21 @@ void VioParametersReader::readConfigFile(const std::string& filename) {
           std::shared_ptr<const okvis::cameras::CameraBase>(
               new okvis::cameras::PinholeCamera<
                   okvis::cameras::RadialTangentialDistortion8>(
-                  calibrations[i].imageDimension[0],
-                  calibrations[i].imageDimension[1],
-                  calibrations[i].focalLength[0],
-                  calibrations[i].focalLength[1],
-                  calibrations[i].principalPoint[0],
-                  calibrations[i].principalPoint[1],
+                  *(calibrations[i].imageDimension)[0],
+                  *(calibrations[i].imageDimension)[1],
+                  *(calibrations[i].focalLength)[0],
+                  *(calibrations[i].focalLength)[1],
+                  *(calibrations[i].principalPoint)[0],
+                  *(calibrations[i].principalPoint)[1],
                   okvis::cameras::RadialTangentialDistortion8(
-                    calibrations[i].distortionCoefficients[0],
-                    calibrations[i].distortionCoefficients[1],
-                    calibrations[i].distortionCoefficients[2],
-                    calibrations[i].distortionCoefficients[3],
-                    calibrations[i].distortionCoefficients[4],
-                    calibrations[i].distortionCoefficients[5],
-                    calibrations[i].distortionCoefficients[6],
-                    calibrations[i].distortionCoefficients[7])/*, id ?*/)),
+                    *(calibrations[i].distortionCoefficients)[0],
+                    *(calibrations[i].distortionCoefficients)[1],
+                    *(calibrations[i].distortionCoefficients)[2],
+                    *(calibrations[i].distortionCoefficients)[3],
+                    *(calibrations[i].distortionCoefficients)[4],
+                    *(calibrations[i].distortionCoefficients)[5],
+                    *(calibrations[i].distortionCoefficients)[6],
+                    *(calibrations[i].distortionCoefficients)[7])/*, id ?*/)),
           okvis::cameras::NCameraSystem::RadialTangential8/*, computeOverlaps ?*/);
       std::stringstream s;
       s << calibrations[i].T_SC.T();
@@ -422,7 +422,7 @@ void VioParametersReader::readConfigFile(const std::string& filename) {
 //getCalibrationViaConfig
   {
     // additional camera calibration
-    std::vector<CameraCalibration,Eigen::aligned_allocator<CameraCalibration>> additional_calibrations;
+    std::vector<CameraCalibration> additional_calibrations;
     if(getCalibrationViaConfig(additional_calibrations, file["additional_cameras"])){
       size_t camIdx = 0;
       for (size_t i = 0; i < additional_calibrations.size(); ++i) {
@@ -437,17 +437,17 @@ void VioParametersReader::readConfigFile(const std::string& filename) {
               std::shared_ptr<const okvis::cameras::CameraBase>(
                   new okvis::cameras::PinholeCamera<
                       okvis::cameras::EquidistantDistortion>(
-                      additional_calibrations[i].imageDimension[0],
-                      additional_calibrations[i].imageDimension[1],
-                      additional_calibrations[i].focalLength[0],
-                      additional_calibrations[i].focalLength[1],
-                      additional_calibrations[i].principalPoint[0],
-                      additional_calibrations[i].principalPoint[1],
+                      *(additional_calibrations[i].imageDimension)[0],
+                      *(additional_calibrations[i].imageDimension)[1],
+                      *(additional_calibrations[i].focalLength)[0],
+                      *(additional_calibrations[i].focalLength)[1],
+                      *(additional_calibrations[i].principalPoint)[0],
+                      *(additional_calibrations[i].principalPoint)[1],
                       okvis::cameras::EquidistantDistortion(
-                        additional_calibrations[i].distortionCoefficients[0],
-                        additional_calibrations[i].distortionCoefficients[1],
-                        additional_calibrations[i].distortionCoefficients[2],
-                        additional_calibrations[i].distortionCoefficients[3])/*, id ?*/)),
+                        *(additional_calibrations[i].distortionCoefficients)[0],
+                        *(additional_calibrations[i].distortionCoefficients)[1],
+                        *(additional_calibrations[i].distortionCoefficients)[2],
+                        *(additional_calibrations[i].distortionCoefficients)[3])/*, id ?*/)),
               okvis::cameras::NCameraSystem::Equidistant/*, computeOverlaps ?*/);
           std::stringstream s;
           s << additional_calibrations[i].T_SC.T();
@@ -460,17 +460,17 @@ void VioParametersReader::readConfigFile(const std::string& filename) {
               std::shared_ptr<const okvis::cameras::CameraBase>(
                   new okvis::cameras::PinholeCamera<
                       okvis::cameras::RadialTangentialDistortion>(
-                      additional_calibrations[i].imageDimension[0],
-                      additional_calibrations[i].imageDimension[1],
-                      additional_calibrations[i].focalLength[0],
-                      additional_calibrations[i].focalLength[1],
-                      additional_calibrations[i].principalPoint[0],
-                      additional_calibrations[i].principalPoint[1],
+                      *(additional_calibrations[i].imageDimension)[0],
+                      *(additional_calibrations[i].imageDimension)[1],
+                      *(additional_calibrations[i].focalLength)[0],
+                      *(additional_calibrations[i].focalLength)[1],
+                      *(additional_calibrations[i].principalPoint)[0],
+                      *(additional_calibrations[i].principalPoint)[1],
                       okvis::cameras::RadialTangentialDistortion(
-                        additional_calibrations[i].distortionCoefficients[0],
-                        additional_calibrations[i].distortionCoefficients[1],
-                        additional_calibrations[i].distortionCoefficients[2],
-                        additional_calibrations[i].distortionCoefficients[3])/*, id ?*/)),
+                        *(additional_calibrations[i].distortionCoefficients)[0],
+                        *(additional_calibrations[i].distortionCoefficients)[1],
+                        *(additional_calibrations[i].distortionCoefficients)[2],
+                        *(additional_calibrations[i].distortionCoefficients)[3])/*, id ?*/)),
               okvis::cameras::NCameraSystem::RadialTangential/*, computeOverlaps ?*/);
           std::stringstream s;
           s << additional_calibrations[i].T_SC.T();
@@ -483,21 +483,21 @@ void VioParametersReader::readConfigFile(const std::string& filename) {
               std::shared_ptr<const okvis::cameras::CameraBase>(
                   new okvis::cameras::PinholeCamera<
                       okvis::cameras::RadialTangentialDistortion8>(
-                      additional_calibrations[i].imageDimension[0],
-                      additional_calibrations[i].imageDimension[1],
-                      additional_calibrations[i].focalLength[0],
-                      additional_calibrations[i].focalLength[1],
-                      additional_calibrations[i].principalPoint[0],
-                      additional_calibrations[i].principalPoint[1],
+                      *(additional_calibrations[i].imageDimension)[0],
+                      *(additional_calibrations[i].imageDimension)[1],
+                      *(additional_calibrations[i].focalLength)[0],
+                      *(additional_calibrations[i].focalLength)[1],
+                      *(additional_calibrations[i].principalPoint)[0],
+                      *(additional_calibrations[i].principalPoint)[1],
                       okvis::cameras::RadialTangentialDistortion8(
-                        additional_calibrations[i].distortionCoefficients[0],
-                        additional_calibrations[i].distortionCoefficients[1],
-                        additional_calibrations[i].distortionCoefficients[2],
-                        additional_calibrations[i].distortionCoefficients[3],
-                        additional_calibrations[i].distortionCoefficients[4],
-                        additional_calibrations[i].distortionCoefficients[5],
-                        additional_calibrations[i].distortionCoefficients[6],
-                        additional_calibrations[i].distortionCoefficients[7])/*, id ?*/)),
+                        *(additional_calibrations[i].distortionCoefficients)[0],
+                        *(additional_calibrations[i].distortionCoefficients)[1],
+                        *(additional_calibrations[i].distortionCoefficients)[2],
+                        *(additional_calibrations[i].distortionCoefficients)[3],
+                        *(additional_calibrations[i].distortionCoefficients)[4],
+                        *(additional_calibrations[i].distortionCoefficients)[5],
+                        *(additional_calibrations[i].distortionCoefficients)[6],
+                        *(additional_calibrations[i].distortionCoefficients)[7])/*, id ?*/)),
               okvis::cameras::NCameraSystem::RadialTangential8/*, computeOverlaps ?*/);
           std::stringstream s;
           s << additional_calibrations[i].T_SC.T();
@@ -619,7 +619,7 @@ bool VioParametersReader::parseBoolean(cv::FileNode node, bool& val) const {
 }
 
 bool VioParametersReader::getCameraCalibration(
-    std::vector<CameraCalibration,Eigen::aligned_allocator<CameraCalibration>> & calibrations,
+    std::vector<CameraCalibration> & calibrations,
     cv::FileStorage& configurationFile) {
 
   bool success = getCalibrationViaConfig(calibrations, configurationFile["cameras"]);
@@ -646,25 +646,8 @@ bool VioParametersReader::getCameraCalibration(
 
 // Get the camera calibration via the configuration file.
 bool VioParametersReader::getCalibrationViaConfig(
-    std::vector<CameraCalibration,Eigen::aligned_allocator<CameraCalibration>> & calibrations,
+    std::vector<CameraCalibration> & calibrations,
     cv::FileNode cameraNode) const {
-
-  // printf("getcalibrationviaconfig enter\n");
-  // fflush(stdout);
-
-  std::vector<CameraCalibration,Eigen::aligned_allocator<CameraCalibration>> test_calibrations;
-
-  test_calibrations.clear();
-  CameraCalibration calib;
-  calib.T_SC = okvis::kinematics::Transformation(Eigen::Matrix4d::Identity());
-  calib.imageDimension << 1., 2.;
-  calib.focalLength << 10., 15.;
-  calib.principalPoint << 200., 100.;
-  calib.distortionType = "radialtangential";
-  test_calibrations.push_back(calib);
-
-  // printf("THIS TEST WORKED\n");
-  // fflush(stdout);
 
   bool gotCalibration = false;
   // first check if calibration is available in config file
@@ -728,15 +711,14 @@ bool VioParametersReader::getCalibrationViaConfig(
       T_SC << T_SC_node[0], T_SC_node[1], T_SC_node[2], T_SC_node[3], T_SC_node[4], T_SC_node[5], T_SC_node[6], T_SC_node[7], T_SC_node[8], T_SC_node[9], T_SC_node[10], T_SC_node[11], T_SC_node[12], T_SC_node[13], T_SC_node[14], T_SC_node[15];
       calib->T_SC = okvis::kinematics::Transformation(T_SC);
 
-      calib->imageDimension << imageDimensionNode[0], imageDimensionNode[1];
-      calib->distortionCoefficients.resize(distortionCoefficientNode.size());
+      *(calib->imageDimension) << imageDimensionNode[0], imageDimensionNode[1];
+      calib->distortionCoefficients->resize(distortionCoefficientNode.size());
       for(size_t i=0; i<distortionCoefficientNode.size(); ++i) {
-        calib->distortionCoefficients[i] = distortionCoefficientNode[i];
+        *(calib->distortionCoefficients)[i] = distortionCoefficientNode[i];
       }
-      calib->focalLength << focalLengthNode[0], focalLengthNode[1];
-      std::cout << "set calibration fl to " << calib->focalLength << std::endl;
-      calib->principalPoint << principalPointNode[0], principalPointNode[1];
-      calib->distortionType = "radialtangential";
+      *(calib->focalLength) << focalLengthNode[0], focalLengthNode[1];
+      *(calib->principalPoint) << principalPointNode[0], principalPointNode[1];
+      *(calib->distortionType) = (std::string)((*it)["distortion_type"]);;
 
       // printf("getcalibrationviaconfig finishcalib\n");
       // fflush(stdout);
@@ -751,9 +733,6 @@ bool VioParametersReader::getCalibrationViaConfig(
     }
   }
 
-  std::cout << calibrations[0].principalPoint << std::endl;
-  std::cout << calibrations[1].principalPoint << std::endl;
-
   // printf("leaving cliabrationaviaconfig\n");
   // fflush(stdout);
 
@@ -762,7 +741,7 @@ bool VioParametersReader::getCalibrationViaConfig(
 
 // Get the camera calibrations via the visensor API.
 bool VioParametersReader::getCalibrationViaVisensorAPI(
-    std::vector<CameraCalibration,Eigen::aligned_allocator<CameraCalibration>> & calibrations) const{
+    std::vector<CameraCalibration> & calibrations) const{
 #ifdef HAVE_LIBVISENSOR
   if (viSensor == nullptr) {
     LOG(ERROR) << "Tried to get calibration from the sensor. But the sensor is not set up.";

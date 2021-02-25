@@ -96,6 +96,13 @@ struct ExtrinsicsEstimationParameters
   double sigma_c_relative_orientation; ///< Relative orientation noise density. [rad/sqrt(Hz)]
 };
 
+// imut() {
+//         test1 = std::allocate_shared<Eigen::Vector3d>(Eigen::aligned_allocator<Eigen::Vector3d>());
+//         test2 = std::allocate_shared<Eigen::Vector3d>(Eigen::aligned_allocator<Eigen::Vector3d>());
+//       }
+//       std::shared_ptr<Eigen::Vector3d> test1;
+//       std::shared_ptr<Eigen::Vector3d> test2;
+
 /*!
  * \brief IMU parameters.
  *
@@ -103,7 +110,9 @@ struct ExtrinsicsEstimationParameters
  *
  */
 struct ImuParameters{
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  ImuParameters() {
+    a0 = std::allocate_shared<Eigen::Vector3d>(Eigen::aligned_allocator<Eigen::Vector3d>());
+  }
   okvis::kinematics::Transformation T_BS; ///< Transformation from Body frame to IMU (sensor frame S).
   double a_max;  ///< Accelerometer saturation. [m/s^2]
   double g_max;  ///< Gyroscope saturation. [rad/s]
@@ -115,7 +124,7 @@ struct ImuParameters{
   double sigma_aw_c; ///< Accelerometer drift noise density.
   double tau;  ///< Reversion time constant of accerometer bias. [s]
   double g;  ///< Earth acceleration.
-  Eigen::Vector3d a0;  ///< Mean of the prior accelerometer bias.
+  std::shared_ptr<Eigen::Vector3d> a0;  ///< Mean of the prior accelerometer bias.
   int rate;  ///< IMU rate in Hz.
 };
 
@@ -126,7 +135,6 @@ struct ImuParameters{
  *
  */
 struct MagnetometerParameters{
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   double stdev; ///< Measurement (white noise part) standard deviation. [uT]
   double priorStdev; ///< Prior. [uT]
   double tau;        ///< Reversion time constant of bias [s]
@@ -141,8 +149,10 @@ struct MagnetometerParameters{
  *
  */
 struct GpsParameters{
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  Eigen::Vector3d antennaOffset; ///< The position offset of the antenna in body (B) coordinates.
+  GpsParameters() {
+    antennaOffset = std::allocate_shared<Eigen::Vector3d>(Eigen::aligned_allocator<Eigen::Vector3d>());
+  }
+  std::shared_ptr<Eigen::Vector3d> antennaOffset; ///< The position offset of the antenna in body (B) coordinates.
 };
 
 /*!
@@ -152,8 +162,10 @@ struct GpsParameters{
  *
  */
 struct PositionSensorParameters{
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  Eigen::Vector3d positionSensorOffset; ///< The position offset of the position sensor in body (B) coordinates.
+  PositionSensorParameters() {
+    positionSensorOffset = std::allocate_shared<Eigen::Vector3d>(Eigen::aligned_allocator<Eigen::Vector3d>());
+  }
+  std::shared_ptr<Eigen::Vector3d> positionSensorOffset; ///< The position offset of the position sensor in body (B) coordinates.
   bool isLeveled; ///< If true, the position sensor measurements are assumed to be world z up (exactly, i.e. only yaw gets estimated).
 };
 
@@ -164,7 +176,6 @@ struct PositionSensorParameters{
  *
  */
 struct MagneticEnuZParameters{
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   double priorStdev;  ///< ENU z-component bias prior. [uT]
   double sigma_c;     ///< ENU z-component noise density. [uT/s/sqrt(Hz)]
   double tau;         ///< Reversion time constant of ENU z-component. [s]
@@ -202,7 +213,11 @@ struct QffParameters{
  *
  */
 struct DifferentialPressureSensorParameters{
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+  DifferentialPressureSensorParameters() {
+    c_minus_z_of_alpha = std::allocate_shared<Eigen::VectorXd>(Eigen::aligned_allocator<Eigen::VectorXd>());
+  }
+
   double differentialPressureStdev; ///< Measurement (white noise part) standard deviation. [Pa]
   /// Measurement (white noise part) standard deviation [m/s^2]
   /// Be conservative, this has to account for model uncertainties, too...
@@ -210,7 +225,7 @@ struct DifferentialPressureSensorParameters{
   /// Polynomial for -z direction (dimensionless) force, alpha deg.
   /// polynomial vector of lenght n as (Matlab polyval style):
   /// c[0]*x^(n-1)+c[1]*x^(n-2)+...+c[n-2]*x+c[n-1] .
-  Eigen::VectorXd c_minus_z_of_alpha;
+  std::shared_ptr<Eigen::VectorXd> c_minus_z_of_alpha;
   double c_y_of_beta; ///< Polynomial (only proportionality) for y direction (dimensionless) force, beta deg.
   double m; ///< Mass. [kg]
   double A; ///< Reference wing area. [m^2]
@@ -270,7 +285,6 @@ struct LoopClosureParameters {
 
 /// @brief Some publishing parameters.
 struct PublishingParameters {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   int publishRate = 200;  ///< Maximum publishing rate. [Hz]
   bool publishLandmarks = true; ///< Select, if you want to publish landmarks at all.
   float landmarkQualityThreshold = 1.0e-5; ///< Quality threshold under which landmarks are not published. Between 0 and 1.
@@ -284,7 +298,6 @@ struct PublishingParameters {
 
 /// @brief Struct to combine all parameters and settings.
 struct VioParameters {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Optimization optimization;    ///< Optimization parameters.
   Visualization visualization;  ///< Visualization parameters.
   SensorsInformation sensors_information; ///< Information on camera and IMU setup.

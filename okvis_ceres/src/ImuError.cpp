@@ -115,10 +115,10 @@ int ImuError::redoPreintegration(const okvis::kinematics::Transformation& /*T_WS
   for (okvis::ImuMeasurementDeque::const_iterator it = imuMeasurements_.begin();
       it != imuMeasurements_.end(); ++it) {
 
-    Eigen::Vector3d omega_S_0 = it->measurement.gyroscopes;
-    Eigen::Vector3d acc_S_0 = it->measurement.accelerometers;
-    Eigen::Vector3d omega_S_1 = (it + 1)->measurement.gyroscopes;
-    Eigen::Vector3d acc_S_1 = (it + 1)->measurement.accelerometers;
+    Eigen::Vector3d omega_S_0 = *(it->measurement.gyroscopes);
+    Eigen::Vector3d acc_S_0 = *(it->measurement.accelerometers);
+    Eigen::Vector3d omega_S_1 = *((it + 1)->measurement.gyroscopes);
+    Eigen::Vector3d acc_S_1 = *((it + 1)->measurement.accelerometers);
 
     // time delta
     okvis::Time nexttime;
@@ -330,10 +330,10 @@ int ImuError::propagation(const okvis::ImuMeasurementDeque & imuMeasurements,
   for (okvis::ImuMeasurementDeque::const_iterator it = imuMeasurements.begin();
         it != imuMeasurements.end(); ++it) {
 
-    Eigen::Vector3d omega_S_0 = it->measurement.gyroscopes;
-    Eigen::Vector3d acc_S_0 = it->measurement.accelerometers;
-    Eigen::Vector3d omega_S_1 = (it + 1)->measurement.gyroscopes;
-    Eigen::Vector3d acc_S_1 = (it + 1)->measurement.accelerometers;
+    Eigen::Vector3d omega_S_0 = *(it->measurement.gyroscopes);
+    Eigen::Vector3d acc_S_0 = *(it->measurement.accelerometers);
+    Eigen::Vector3d omega_S_1 = *((it + 1)->measurement.gyroscopes);
+    Eigen::Vector3d acc_S_1 = *((it + 1)->measurement.accelerometers);
 
     // time delta
     okvis::Time nexttime;

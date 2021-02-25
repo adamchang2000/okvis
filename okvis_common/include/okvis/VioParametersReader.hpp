@@ -59,7 +59,6 @@ namespace okvis {
  */
 class VioParametersReader{
  public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
 
   /// \brief The default constructor.
@@ -102,14 +101,18 @@ class VioParametersReader{
 
   /// @brief Struct that contains all the camera calibration information.
   struct CameraCalibration {
+    CameraCalibration() {
+      imageDimension = std::allocate_shared<Eigen::Vector2d>(Eigen::aligned_allocator<Eigen::Vector2d>());
+      distortionCoefficients = std::allocate_shared<Eigen::VectorXd>(Eigen::aligned_allocator<Eigen::VectorXd>());
+      focalLength = std::allocate_shared<Eigen::Vector2d>(Eigen::aligned_allocator<Eigen::Vector2d>());
+      principalPoint = std::allocate_shared<Eigen::Vector2d>(Eigen::aligned_allocator<Eigen::Vector2d>());
+    }
     okvis::kinematics::Transformation T_SC;   ///< Transformation from camera to sensor (IMU) frame.
-    Eigen::Vector2d imageDimension;           ///< Image dimension. [pixels]
-    Eigen::VectorXd distortionCoefficients;   ///< Distortion Coefficients.
-    Eigen::Vector2d focalLength;              ///< Focal length.
-    Eigen::Vector2d principalPoint;           ///< Principal point.
+    std::shared_ptr<Eigen::Vector2d> imageDimension;           ///< Image dimension. [pixels]
+    std::shared_ptr<Eigen::VectorXd> distortionCoefficients;   ///< Distortion Coefficients.
+    std::shared_ptr<Eigen::Vector2d> focalLength;              ///< Focal length.
+    std::shared_ptr<Eigen::Vector2d> principalPoint;           ///< Principal point.
     std::string distortionType;               ///< Distortion type. ('radialtangential' 'plumb_bob' 'equdistant')
-  public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   /// If readConfigFile() has been called at least once this is true
@@ -136,7 +139,7 @@ class VioParametersReader{
    * @return True if reading of the calibration was successful.
    */
   virtual bool getCameraCalibration(
-      std::vector<CameraCalibration,Eigen::aligned_allocator<CameraCalibration>> & calibrations,
+      std::vector<CameraCalibration> & calibrations,
       cv::FileStorage& configurationFile);
 
   /**
@@ -146,7 +149,7 @@ class VioParametersReader{
    * @return True if reading and parsing of calibration was successful.
    */
   bool getCalibrationViaConfig(
-      std::vector<CameraCalibration,Eigen::aligned_allocator<CameraCalibration>> & calibrations,
+      std::vector<CameraCalibration> & calibrations,
       cv::FileNode cameraNode) const;
 
   /**
@@ -155,7 +158,7 @@ class VioParametersReader{
    * @return True if successful.
    */
   bool getCalibrationViaVisensorAPI(
-      std::vector<CameraCalibration,Eigen::aligned_allocator<CameraCalibration>> & calibrations) const;
+      std::vector<CameraCalibration> & calibrations) const;
 
 };
 

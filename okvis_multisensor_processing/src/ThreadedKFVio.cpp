@@ -46,11 +46,14 @@
 #include <okvis/assert_macros.hpp>
 #include <okvis/ceres/ImuError.hpp>
 
+#include <boost/type_index.hpp>
+
 /// \brief okvis Main namespace of this package.
 namespace okvis {
 
 static const int max_camera_input_queue_size = 10;
 static const okvis::Duration temporal_imu_data_overlap(0.02);  // overlap of imu data before and after two consecutive frames [seconds]
+
 
 #ifdef USE_MOCK
 // Constructor for gmock.
@@ -96,6 +99,35 @@ ThreadedKFVio::ThreadedKFVio(okvis::VioParameters& parameters)
 
 // Initialises settings and calls startThreads().
 void ThreadedKFVio::init() {
+
+  printf("push test inside tkfv\n");
+  fflush(stdout);
+
+  struct imut {
+    public:
+      imut() {
+        test1 = std::allocate_shared<Eigen::Vector3d>(Eigen::aligned_allocator<Eigen::Vector3d>());
+        test2 = std::allocate_shared<Eigen::Vector3d>(Eigen::aligned_allocator<Eigen::Vector3d>());
+      }
+      std::shared_ptr<Eigen::Vector3d> test1;
+      std::shared_ptr<Eigen::Vector3d> test2;
+    };
+
+    std::deque<struct imut> testdq;
+
+    for (int i = 0; i < 500; i++) {
+      printf("pushing frame %d\n", i);
+      fflush(stdout); 
+      struct imut data;
+      //data.gyroscopes << 1, 2, 3;
+      //data.test << 4, 5, 6;
+      testdq.push_back(data);
+    }
+
+    printf("passed my push test inside tkfv\n");
+    fflush(stdout);
+
+
 
   assert(parameters_.nCameraSystem.numCameras() > 0);
   numCameras_ = parameters_.nCameraSystem.numCameras();
@@ -266,8 +298,8 @@ bool ThreadedKFVio::addImuMeasurement(const okvis::Time & stamp,
                                       const Eigen::Vector3d & omega) {
 
   okvis::ImuMeasurement imu_measurement;
-  imu_measurement.measurement.accelerometers = alpha;
-  imu_measurement.measurement.gyroscopes = omega;
+  *(imu_measurement.measurement.accelerometers) = alpha;
+  *(imu_measurement.measurement.gyroscopes) = omega;
   imu_measurement.timeStamp = stamp;
 
   if (blocking_) {
@@ -286,9 +318,9 @@ void ThreadedKFVio::addPositionMeasurement(const okvis::Time & stamp,
                                            const Eigen::Vector3d & positionOffset,
                                            const Eigen::Matrix3d & positionCovariance) {
   okvis::PositionMeasurement position_measurement;
-  position_measurement.measurement.position = position;
-  position_measurement.measurement.positionOffset = positionOffset;
-  position_measurement.measurement.positionCovariance = positionCovariance;
+  *(position_measurement.measurement.position) = position;
+  *(position_measurement.measurement.positionOffset) = positionOffset;
+  *(position_measurement.measurement.positionCovariance) = positionCovariance;
   position_measurement.timeStamp = stamp;
 
   if (blocking_) {
@@ -487,6 +519,9 @@ void ThreadedKFVio::matchingLoop() {
     if (keypointMeasurements_.PopBlocking(&frame) == false)
       return;
 
+    printf("frame stuff: %d\n", frame->numKeypoints());
+    fflush(stdout);
+
 
     prepareToAddStateTimer.start();
     // -- get relevant imu messages for new state
@@ -508,6 +543,9 @@ void ThreadedKFVio::matchingLoop() {
 
     okvis::ImuMeasurementDeque imuData = getImuMeasurments(imuDataBeginTime,
                                                            imuDataEndTime);
+
+    printf("got imu measurements: %d", imuData.size());
+    fflush(stdout);
 
     prepareToAddStateTimer.stop();
     // if imu_data is empty, either end_time > begin_time or
@@ -683,16 +721,9 @@ void ThreadedKFVio::imuConsumerLoop() {
           start = okvis::Time(0, 0);
         end = &data.timeStamp;
       }
-      std::cout << "imumeasure size " << imuMeasurements_.size() << std::endl;
-      if (imuMeasurements_.size() > 0) {
-        std::cout << imuMeasurements_.back().timeStamp << std::endl;
-        std::cout << imuMeasurements_.front().timeStamp << std::endl;
-        std::cout << data.timeStamp << std::endl;
-      }
+      printf("pushing back %d\n", imuMeasurements_.size());
       fflush(stdout);
       imuMeasurements_.push_back(data);
-      printf("got past this pushback\n");
-      fflush(stdout);
     }  // unlock _imuMeasurements_mutex
 
     // notify other threads that imu data with timeStamp is here.
@@ -709,7 +740,7 @@ void ThreadedKFVio::imuConsumerLoop() {
       result.stamp = *end;
       result.T_WS = T_WS_propagated_;
       result.speedAndBiases = speedAndBiases_propagated_;
-      result.omega_S = imuMeasurements_.back().measurement.gyroscopes
+      result.omega_S = *(imuMeasurements_.back().measurement.gyroscopes)
           - speedAndBiases_propagated_.segment<3>(3);
       for (size_t i = 0; i < parameters_.nCameraSystem.numCameras(); ++i) {
         printf("right before the push back 2\n");

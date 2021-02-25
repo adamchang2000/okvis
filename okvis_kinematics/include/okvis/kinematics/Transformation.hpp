@@ -44,6 +44,7 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include "okvis/kinematics/operators.hpp"
+#include <memory>
 
 /// \brief okvis Main namespace of this package.
 namespace okvis {
@@ -134,21 +135,21 @@ class Transformation
   /// \brief The coefficients (parameters) as [r_AB,q_AB], q_AB as [x,y,z,w] (Eigen internal convention).
   const Eigen::Matrix<double, 7, 1> & coeffs() const
   {
-    return parameters_;
+    return *parameters_;
   }
 
   /// \brief The parameters (coefficients) as [r_AB,q_AB], q_AB as [x,y,z,w] (Eigen internal convention).
   const Eigen::Matrix<double, 7, 1> & parameters() const
   {
-    return parameters_;
+    return *parameters_;
   }
 
   /// \brief Get the parameters --- support for ceres.
   /// \warning USE WITH CARE!
-  const double* parameterPtr() const
-  {
-    return &parameters_[0];
-  }
+  // const double* parameterPtr() const
+  // {
+  //   return (*parameters_)[0];
+  // }
 
   /// \brief Set this to a random transformation.
   void setRandom();
@@ -226,10 +227,10 @@ class Transformation
  protected:
   /// \brief Update the caching of the rotation matrix.
   void updateC();
-  Eigen::Matrix<double, 7, 1> parameters_;  ///< Concatenated parameters [r;q].
+  std::shared_ptr<Eigen::Matrix<double, 7, 1>> parameters_;  ///< Concatenated parameters [r;q].
   Eigen::Map<Eigen::Vector3d> r_;  ///< Translation {_A}r_{B}.
   Eigen::Map<Eigen::Quaterniond> q_;  ///< Quaternion q_{AB}.
-  Eigen::Matrix3d C_; ///< The cached DCM C_{AB}.
+  std::shared_ptr<Eigen::Matrix3d> C_; ///< The cached DCM C_{AB}.
 };
 
 }  // namespace kinematics

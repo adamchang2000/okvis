@@ -831,7 +831,7 @@ bool Estimator::initPoseFromImu(
   Eigen::Vector3d acc_B = Eigen::Vector3d::Zero();
   for (okvis::ImuMeasurementDeque::const_iterator it = imuMeasurements.begin();
       it < imuMeasurements.end(); ++it) {
-    acc_B += it->measurement.accelerometers;
+    acc_B += *(it->measurement.accelerometers);
   }
   acc_B /= double(imuMeasurements.size());
   Eigen::Vector3d e_acc = acc_B.normalized();

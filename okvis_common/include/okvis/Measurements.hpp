@@ -65,7 +65,6 @@ namespace okvis {
  */
 template<class MEASUREMENT_T>
 struct Measurement {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   okvis::Time timeStamp;      ///< Measurement timestamp
   MEASUREMENT_T measurement;  ///< Actual measurement.
   int sensorId = -1;          ///< Sensor ID. E.g. camera index in a multicamera setup
@@ -88,26 +87,35 @@ struct Measurement {
   }
 };
 
+// imut() {
+//         test1 = std::allocate_shared<Eigen::Vector3d>(Eigen::aligned_allocator<Eigen::Vector3d>());
+//         test2 = std::allocate_shared<Eigen::Vector3d>(Eigen::aligned_allocator<Eigen::Vector3d>());
+//       }
+//       std::shared_ptr<Eigen::Vector3d> test1;
+//       std::shared_ptr<Eigen::Vector3d> test2;
+
+
+
 /// \brief IMU measurements. For now assume they are synchronized:
 struct ImuSensorReadings {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+public:
   /// \brief Default constructor.
-  ImuSensorReadings()
-      : gyroscopes(),
-        accelerometers() {
+  ImuSensorReadings() {
+    gyroscopes = std::allocate_shared<Eigen::Vector3d>(Eigen::aligned_allocator<Eigen::Vector3d>());
+    accelerometers = std::allocate_shared<Eigen::Vector3d>(Eigen::aligned_allocator<Eigen::Vector3d>());
   }
   /**
    * @brief Constructor.
    * @param gyroscopes_ Gyroscope measurement.
    * @param accelerometers_ Accelerometer measurement.
    */
-  ImuSensorReadings(Eigen::Vector3d gyroscopes_,
-                    Eigen::Vector3d accelerometers_)
-      : gyroscopes(gyroscopes_),
-        accelerometers(accelerometers_) {
+  ImuSensorReadings(Eigen::Vector3d &gyroscopes_,
+                    Eigen::Vector3d &accelerometers_) {
+    gyroscopes = std::allocate_shared<Eigen::Vector3d>(Eigen::aligned_allocator<Eigen::Vector3d>(), gyroscopes_);
+    accelerometers = std::allocate_shared<Eigen::Vector3d>(Eigen::aligned_allocator<Eigen::Vector3d>(), accelerometers_);
   }
-  Eigen::Vector3d gyroscopes;     ///< Gyroscope measurement.
-  Eigen::Vector3d accelerometers; ///< Accelerometer measurement.
+  std::shared_ptr<Eigen::Vector3d> gyroscopes;     ///< Gyroscope measurement.
+  std::shared_ptr<Eigen::Vector3d> accelerometers; ///< Accelerometer measurement.
 };
 
 /// \brief Depth camera measurements. For now assume they are synchronized:
@@ -120,47 +128,58 @@ struct DepthCameraData {
 
 /// \brief Position measurement.
 struct PositionReading {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  Eigen::Vector3d position;           ///< Position measurement.
-  Eigen::Vector3d positionOffset;     ///< Position offset.
-  Eigen::Matrix3d positionCovariance; ///< Measurement covariance.
+  PositionReading() {
+    position = std::allocate_shared<Eigen::Vector3d>(Eigen::aligned_allocator<Eigen::Vector3d>());
+    positionOffset = std::allocate_shared<Eigen::Vector3d>(Eigen::aligned_allocator<Eigen::Vector3d>());
+    positionCovariance = std::allocate_shared<Eigen::Matrix3d>(Eigen::aligned_allocator<Eigen::Matrix3d>());
+  }
+  std::shared_ptr<Eigen::Vector3d> position;           ///< Position measurement.
+  std::shared_ptr<Eigen::Vector3d> positionOffset;     ///< Position offset.
+  std::shared_ptr<Eigen::Matrix3d> positionCovariance; ///< Measurement covariance.
 };
 
 /// \brief GPS position measurement.
 struct GpsPositionReading {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  GpsPositionReading() {
+    positionCovarianceENU = std::allocate_shared<Eigen::Matrix3d>(Eigen::aligned_allocator<Eigen::Matrix3d>());
+  }
   double lat_wgs84;   ///< Latitude in WGS84 coordinate system.
   double lon_wgs84;   ///< Longitude in WGS84 coordiante system.
   double alt_wgs84;   ///< Altitude in WGS84 coordinate system.
   double geoidSeparation; ///< Separation between geoid (MSL) and WGS-84 ellipsoid. [m]
-  Eigen::Matrix3d positionCovarianceENU; ///< Measurement covariance. East/North/Up.
+  std::shared_ptr<Eigen::Matrix3d> positionCovarianceENU; ///< Measurement covariance. East/North/Up.
 };
 
 /// \brief Magnetometer measurement.
 struct MagnetometerReading {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   ///< The magnetic flux density measurement. [uT]
-  Eigen::Vector3d fluxDensity;
+  MagnetometerReading() {
+    fluxDensity = std::allocate_shared<Eigen::Vector3d>(Eigen::aligned_allocator<Eigen::Vector3d>());
+  }
+  std::shared_ptr<Eigen::Vector3d> fluxDensity;
 };
 
 /// \brief Barometer measurement.
 struct BarometerReading {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   double pressure;    ///< Pressure measurement. [Pa]
   double temperature; ///< Temperature. [K]
 };
 
 /// \brief Differential pressure sensor measurement.
 struct DifferentialPressureReading {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  DifferentialPressureReading() {
+    acceleration_B = std::allocate_shared<Eigen::Vector3d>(Eigen::aligned_allocator<Eigen::Vector3d>());
+  }
   double pressure;  ///< Pressure measurement. [Pa]
-  Eigen::Vector3d acceleration_B;  ///< Acceleration in B-frame.
+  std::shared_ptr<Eigen::Vector3d> acceleration_B;  ///< Acceleration in B-frame.
 };
 
 // this is how we store raw measurements before more advanced filling into
 // data structures happens:
 typedef Measurement<ImuSensorReadings> ImuMeasurement;
-typedef std::deque<ImuMeasurement, Eigen::aligned_allocator<ImuMeasurement> > ImuMeasurementDeque;
+//typedef std::deque<ImuMeasurement, Eigen::aligned_allocator<ImuMeasurement> > ImuMeasurementDeque;
+typedef std::deque<ImuMeasurement> ImuMeasurementDeque;
+
 /// \brief Camera measurement.
 struct CameraData {
   cv::Mat image;  ///< Image.
@@ -184,16 +203,19 @@ typedef Measurement<FrameData> FrameMeasurement;
 typedef Measurement<DepthCameraData> DepthCameraMeasurement;
 
 typedef Measurement<PositionReading> PositionMeasurement;
-typedef std::deque<PositionMeasurement,
-    Eigen::aligned_allocator<PositionMeasurement> > PositionMeasurementDeque;
+// typedef std::deque<PositionMeasurement,
+    // Eigen::aligned_allocator<PositionMeasurement> > PositionMeasurementDeque;
+typedef std::deque<PositionMeasurement> PositionMeasurementDeque;
 
 typedef Measurement<GpsPositionReading> GpsPositionMeasurement;
-typedef std::deque<GpsPositionMeasurement,
-    Eigen::aligned_allocator<GpsPositionMeasurement> > GpsPositionMeasurementDeque;
+// typedef std::deque<GpsPositionMeasurement,
+//     Eigen::aligned_allocator<GpsPositionMeasurement> > GpsPositionMeasurementDeque;
+typedef std::deque<GpsPositionMeasurement> GpsPositionMeasurementDeque;
 
 typedef Measurement<MagnetometerReading> MagnetometerMeasurement;
-typedef std::deque<MagnetometerMeasurement,
-    Eigen::aligned_allocator<MagnetometerMeasurement> > MagnetometerMeasurementDeque;
+// typedef std::deque<MagnetometerMeasurement,
+//     Eigen::aligned_allocator<MagnetometerMeasurement> > MagnetometerMeasurementDeque;
+typedef std::deque<MagnetometerMeasurement> MagnetometerMeasurementDeque;
 
 typedef Measurement<BarometerReading> BarometerMeasurement;
 

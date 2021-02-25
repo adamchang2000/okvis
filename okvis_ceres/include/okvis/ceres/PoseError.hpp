@@ -54,8 +54,6 @@ namespace ceres {
 class PoseError : public ::ceres::SizedCostFunction<6 /* number of residuals */,
     7 /* size of first parameter */>, public ErrorInterface {
  public:
-
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
 
   /// \brief The base class type.
@@ -96,7 +94,7 @@ class PoseError : public ::ceres::SizedCostFunction<6 /* number of residuals */,
   /// \brief Set the measurement.
   /// @param[in] measurement The measurement.
   void setMeasurement(const okvis::kinematics::Transformation & measurement) {
-    measurement_ = measurement;
+    *measurement_ = measurement;
   }
 
   /// \brief Set the information.
@@ -116,13 +114,13 @@ class PoseError : public ::ceres::SizedCostFunction<6 /* number of residuals */,
   /// \brief Get the information matrix.
   /// \return The information (weight) matrix.
   const information_t& information() const {
-    return information_;
+    return *information_;
   }
 
   /// \brief Get the covariance matrix.
   /// \return The inverse information (covariance) matrix.
   const information_t& covariance() const {
-    return covariance_;
+    return *covariance_;
   }
 
   /// \}
@@ -179,9 +177,9 @@ class PoseError : public ::ceres::SizedCostFunction<6 /* number of residuals */,
   okvis::kinematics::Transformation measurement_; ///< The pose measurement.
 
   // weighting related
-  information_t information_; ///< The 6x6 information matrix.
-  information_t squareRootInformation_; ///< The 6x6 square root information matrix.
-  covariance_t covariance_; ///< The 6x6 covariance matrix.
+  std::shared_ptr<information_t> information_; ///< The 6x6 information matrix.
+  std::shared_ptr<information_t> squareRootInformation_; ///< The 6x6 square root information matrix.
+  std::shared_ptr<covariance_t> covariance_; ///< The 6x6 covariance matrix.
 
 };
 
