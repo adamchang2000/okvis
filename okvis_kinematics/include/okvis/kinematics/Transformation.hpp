@@ -228,8 +228,8 @@ class Transformation
   /// \brief Update the caching of the rotation matrix.
   void updateC();
   std::shared_ptr<Eigen::Matrix<double, 7, 1>> parameters_;  ///< Concatenated parameters [r;q].
-  Eigen::Map<Eigen::Vector3d> r_;  ///< Translation {_A}r_{B}.
-  Eigen::Map<Eigen::Quaterniond> q_;  ///< Quaternion q_{AB}.
+  //::Map<Eigen::Vector3d> r_;  ///< Translation {_A}r_{B}.
+  //Eigen::Map<Eigen::Quaterniond> q_;  ///< Quaternion q_{AB}.
   std::shared_ptr<Eigen::Matrix3d> C_; ///< The cached DCM C_{AB}.
 };
 

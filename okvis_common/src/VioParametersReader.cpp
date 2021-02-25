@@ -337,6 +337,9 @@ void VioParametersReader::readConfigFile(const std::string& filename) {
   size_t camIdx = 0;
   for (size_t i = 0; i < calibrations.size(); ++i) {
 
+    printf("are we breaking here, init transformation with 2 things\n");
+    fflush(stdout);
+
     std::shared_ptr<const okvis::kinematics::Transformation> T_SC_okvis_ptr(
           new okvis::kinematics::Transformation(calibrations[i].T_SC.r(),
                                                 calibrations[i].T_SC.q().normalized()));
