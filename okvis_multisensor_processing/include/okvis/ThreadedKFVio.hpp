@@ -88,8 +88,6 @@ namespace okvis {
  */
 class ThreadedKFVio : public VioInterface {
  public:
-
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
 
 #ifdef DEACTIVATE_TIMERS
@@ -297,12 +295,12 @@ class ThreadedKFVio : public VioInterface {
   ///        measurements.
   struct OptimizationResults {
     OptimizationResults() {
-      omega_s = 
+      omega_S = std::allocate_shared<Eigen::Matrix<double, 3, 1>>(Eigen::aligned_allocator<Eigen::Matrix<double, 3, 1>>());
     }
     okvis::Time stamp;                          ///< Timestamp of the optimized/propagated pose.
     okvis::kinematics::Transformation T_WS;     ///< The pose.
     okvis::SpeedAndBias speedAndBiases;         ///< The speeds and biases.
-    Eigen::Matrix<double, 3, 1> omega_S;        ///< The rotational speed of the sensor.
+    std::shared_ptr<Eigen::Matrix<double, 3, 1>> omega_S;        ///< The rotational speed of the sensor.
     /// The relative transformation of the cameras to the sensor (IMU) frame
     std::vector<okvis::kinematics::Transformation> vector_of_T_SCi;
 

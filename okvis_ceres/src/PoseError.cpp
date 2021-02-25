@@ -105,7 +105,7 @@ bool PoseError::EvaluateWithMinimalJacobians(double const* const * parameters,
 
   // weigh it
   Eigen::Map<Eigen::Matrix<double, 6, 1> > weighted_error(residuals);
-  weighted_error = squareRootInformation_ * error;
+  weighted_error = *squareRootInformation_ * error;
 
   // compute Jacobian...
   if (jacobians != NULL) {
@@ -117,7 +117,7 @@ bool PoseError::EvaluateWithMinimalJacobians(double const* const * parameters,
       J0_minimal *= -1.0;
       J0_minimal.block<3, 3>(3, 3) = -okvis::kinematics::plus(dp.q())
           .topLeftCorner<3, 3>();
-      J0_minimal = (squareRootInformation_ * J0_minimal).eval();
+      J0_minimal = (*squareRootInformation_ * J0_minimal).eval();
 
       // pseudo inverse of the local parametrization Jacobian:
       Eigen::Matrix<double, 6, 7, Eigen::RowMajor> J_lift;

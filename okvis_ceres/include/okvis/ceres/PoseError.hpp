@@ -94,7 +94,7 @@ class PoseError : public ::ceres::SizedCostFunction<6 /* number of residuals */,
   /// \brief Set the measurement.
   /// @param[in] measurement The measurement.
   void setMeasurement(const okvis::kinematics::Transformation & measurement) {
-    *measurement_ = measurement;
+    measurement_ = measurement;
   }
 
   /// \brief Set the information.

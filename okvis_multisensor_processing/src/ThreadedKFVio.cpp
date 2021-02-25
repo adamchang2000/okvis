@@ -453,7 +453,7 @@ void ThreadedKFVio::frameConsumerLoop(size_t cameraIndex) {
         std::lock_guard<std::mutex> lock(lastState_mutex_);
         lastOptimized_T_WS_ = T_WS;
         lastOptimizedSpeedAndBiases_.setZero();
-        lastOptimizedSpeedAndBiases_.segment<3>(6) = imu_params_.a0;
+        lastOptimizedSpeedAndBiases_.segment<3>(6) = *(imu_params_.a0);
         lastOptimizedStateTimestamp_ = multiFrame->timestamp();
       }
       OKVIS_ASSERT_TRUE_DBG(Exception, success,
@@ -740,7 +740,7 @@ void ThreadedKFVio::imuConsumerLoop() {
       result.stamp = *end;
       result.T_WS = T_WS_propagated_;
       result.speedAndBiases = speedAndBiases_propagated_;
-      result.omega_S = *(imuMeasurements_.back().measurement.gyroscopes)
+      *result.omega_S = *(imuMeasurements_.back().measurement.gyroscopes)
           - speedAndBiases_propagated_.segment<3>(3);
       for (size_t i = 0; i < parameters_.nCameraSystem.numCameras(); ++i) {
         printf("right before the push back 2\n");
@@ -1125,10 +1125,10 @@ void ThreadedKFVio::publisherLoop() {
       stateCallback_(result.stamp, result.T_WS);
     if (fullStateCallback_ && !result.onlyPublishLandmarks)
       fullStateCallback_(result.stamp, result.T_WS, result.speedAndBiases,
-                         result.omega_S);
+                         *(result.omega_S));
     if (fullStateCallbackWithExtrinsics_ && !result.onlyPublishLandmarks)
       fullStateCallbackWithExtrinsics_(result.stamp, result.T_WS,
-                                       result.speedAndBiases, result.omega_S,
+                                       result.speedAndBiases, *(result.omega_S),
                                        result.vector_of_T_SCi);
     if (landmarksCallback_ && !result.landmarksVector.empty())
       landmarksCallback_(result.stamp, result.landmarksVector,

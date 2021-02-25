@@ -347,17 +347,17 @@ void VioParametersReader::readConfigFile(const std::string& filename) {
           std::shared_ptr<const okvis::cameras::CameraBase>(
               new okvis::cameras::PinholeCamera<
                   okvis::cameras::EquidistantDistortion>(
-                  *(calibrations[i].imageDimension)[0],
-                  *(calibrations[i].imageDimension)[1],
-                  *(calibrations[i].focalLength)[0],
-                  *(calibrations[i].focalLength)[1],
-                  *(calibrations[i].principalPoint)[0],
-                  *(calibrations[i].principalPoint)[1],
+                  (*calibrations[i].imageDimension)[0],
+                  (*calibrations[i].imageDimension)[1],
+                  (*calibrations[i].focalLength)[0],
+                  (*calibrations[i].focalLength)[1],
+                  (*calibrations[i].principalPoint)[0],
+                  (*calibrations[i].principalPoint)[1],
                   okvis::cameras::EquidistantDistortion(
-                    *(calibrations[i].distortionCoefficients)[0],
-                    *(calibrations[i].distortionCoefficients)[1],
-                    *(calibrations[i].distortionCoefficients)[2],
-                    *(calibrations[i].distortionCoefficients)[3])/*, id ?*/)),
+                    (*calibrations[i].distortionCoefficients)[0],
+                    (*calibrations[i].distortionCoefficients)[1],
+                    (*calibrations[i].distortionCoefficients)[2],
+                    (*calibrations[i].distortionCoefficients)[3])/*, id ?*/)),
           okvis::cameras::NCameraSystem::Equidistant/*, computeOverlaps ?*/);
       std::stringstream s;
       s << calibrations[i].T_SC.T();
@@ -370,17 +370,17 @@ void VioParametersReader::readConfigFile(const std::string& filename) {
           std::shared_ptr<const okvis::cameras::CameraBase>(
               new okvis::cameras::PinholeCamera<
                   okvis::cameras::RadialTangentialDistortion>(
-                  *(calibrations[i].imageDimension)[0],
-                  *(calibrations[i].imageDimension)[1],
-                  *(calibrations[i].focalLength)[0],
-                  *(calibrations[i].focalLength)[1],
-                  *(calibrations[i].principalPoint)[0],
-                  *(calibrations[i].principalPoint)[1],
+                  (*calibrations[i].imageDimension)[0],
+                  (*calibrations[i].imageDimension)[1],
+                  (*calibrations[i].focalLength)[0],
+                  (*calibrations[i].focalLength)[1],
+                  (*calibrations[i].principalPoint)[0],
+                  (*calibrations[i].principalPoint)[1],
                   okvis::cameras::RadialTangentialDistortion(
-                    *(calibrations[i].distortionCoefficients)[0],
-                    *(calibrations[i].distortionCoefficients)[1],
-                    *(calibrations[i].distortionCoefficients)[2],
-                    *(calibrations[i].distortionCoefficients)[3])/*, id ?*/)),
+                    (*calibrations[i].distortionCoefficients)[0],
+                    (*calibrations[i].distortionCoefficients)[1],
+                    (*calibrations[i].distortionCoefficients)[2],
+                    (*calibrations[i].distortionCoefficients)[3])/*, id ?*/)),
           okvis::cameras::NCameraSystem::RadialTangential/*, computeOverlaps ?*/);
       std::stringstream s;
       s << calibrations[i].T_SC.T();
@@ -393,21 +393,21 @@ void VioParametersReader::readConfigFile(const std::string& filename) {
           std::shared_ptr<const okvis::cameras::CameraBase>(
               new okvis::cameras::PinholeCamera<
                   okvis::cameras::RadialTangentialDistortion8>(
-                  *(calibrations[i].imageDimension)[0],
-                  *(calibrations[i].imageDimension)[1],
-                  *(calibrations[i].focalLength)[0],
-                  *(calibrations[i].focalLength)[1],
-                  *(calibrations[i].principalPoint)[0],
-                  *(calibrations[i].principalPoint)[1],
+                  (*calibrations[i].imageDimension)[0],
+                  (*calibrations[i].imageDimension)[1],
+                  (*calibrations[i].focalLength)[0],
+                  (*calibrations[i].focalLength)[1],
+                  (*calibrations[i].principalPoint)[0],
+                  (*calibrations[i].principalPoint)[1],
                   okvis::cameras::RadialTangentialDistortion8(
-                    *(calibrations[i].distortionCoefficients)[0],
-                    *(calibrations[i].distortionCoefficients)[1],
-                    *(calibrations[i].distortionCoefficients)[2],
-                    *(calibrations[i].distortionCoefficients)[3],
-                    *(calibrations[i].distortionCoefficients)[4],
-                    *(calibrations[i].distortionCoefficients)[5],
-                    *(calibrations[i].distortionCoefficients)[6],
-                    *(calibrations[i].distortionCoefficients)[7])/*, id ?*/)),
+                    (*calibrations[i].distortionCoefficients)[0],
+                    (*calibrations[i].distortionCoefficients)[1],
+                    (*calibrations[i].distortionCoefficients)[2],
+                    (*calibrations[i].distortionCoefficients)[3],
+                    (*calibrations[i].distortionCoefficients)[4],
+                    (*calibrations[i].distortionCoefficients)[5],
+                    (*calibrations[i].distortionCoefficients)[6],
+                    (*calibrations[i].distortionCoefficients)[7])/*, id ?*/)),
           okvis::cameras::NCameraSystem::RadialTangential8/*, computeOverlaps ?*/);
       std::stringstream s;
       s << calibrations[i].T_SC.T();
@@ -437,17 +437,17 @@ void VioParametersReader::readConfigFile(const std::string& filename) {
               std::shared_ptr<const okvis::cameras::CameraBase>(
                   new okvis::cameras::PinholeCamera<
                       okvis::cameras::EquidistantDistortion>(
-                      *(additional_calibrations[i].imageDimension)[0],
-                      *(additional_calibrations[i].imageDimension)[1],
-                      *(additional_calibrations[i].focalLength)[0],
-                      *(additional_calibrations[i].focalLength)[1],
-                      *(additional_calibrations[i].principalPoint)[0],
-                      *(additional_calibrations[i].principalPoint)[1],
+                      (*additional_calibrations[i].imageDimension)[0],
+                      (*additional_calibrations[i].imageDimension)[1],
+                      (*additional_calibrations[i].focalLength)[0],
+                      (*additional_calibrations[i].focalLength)[1],
+                      (*additional_calibrations[i].principalPoint)[0],
+                      (*additional_calibrations[i].principalPoint)[1],
                       okvis::cameras::EquidistantDistortion(
-                        *(additional_calibrations[i].distortionCoefficients)[0],
-                        *(additional_calibrations[i].distortionCoefficients)[1],
-                        *(additional_calibrations[i].distortionCoefficients)[2],
-                        *(additional_calibrations[i].distortionCoefficients)[3])/*, id ?*/)),
+                        (*additional_calibrations[i].distortionCoefficients)[0],
+                        (*additional_calibrations[i].distortionCoefficients)[1],
+                        (*additional_calibrations[i].distortionCoefficients)[2],
+                        (*additional_calibrations[i].distortionCoefficients)[3])/*, id ?*/)),
               okvis::cameras::NCameraSystem::Equidistant/*, computeOverlaps ?*/);
           std::stringstream s;
           s << additional_calibrations[i].T_SC.T();
@@ -460,17 +460,17 @@ void VioParametersReader::readConfigFile(const std::string& filename) {
               std::shared_ptr<const okvis::cameras::CameraBase>(
                   new okvis::cameras::PinholeCamera<
                       okvis::cameras::RadialTangentialDistortion>(
-                      *(additional_calibrations[i].imageDimension)[0],
-                      *(additional_calibrations[i].imageDimension)[1],
-                      *(additional_calibrations[i].focalLength)[0],
-                      *(additional_calibrations[i].focalLength)[1],
-                      *(additional_calibrations[i].principalPoint)[0],
-                      *(additional_calibrations[i].principalPoint)[1],
+                      (*additional_calibrations[i].imageDimension)[0],
+                      (*additional_calibrations[i].imageDimension)[1],
+                      (*additional_calibrations[i].focalLength)[0],
+                      (*additional_calibrations[i].focalLength)[1],
+                      (*additional_calibrations[i].principalPoint)[0],
+                      (*additional_calibrations[i].principalPoint)[1],
                       okvis::cameras::RadialTangentialDistortion(
-                        *(additional_calibrations[i].distortionCoefficients)[0],
-                        *(additional_calibrations[i].distortionCoefficients)[1],
-                        *(additional_calibrations[i].distortionCoefficients)[2],
-                        *(additional_calibrations[i].distortionCoefficients)[3])/*, id ?*/)),
+                        (*additional_calibrations[i].distortionCoefficients)[0],
+                        (*additional_calibrations[i].distortionCoefficients)[1],
+                        (*additional_calibrations[i].distortionCoefficients)[2],
+                        (*additional_calibrations[i].distortionCoefficients)[3])/*, id ?*/)),
               okvis::cameras::NCameraSystem::RadialTangential/*, computeOverlaps ?*/);
           std::stringstream s;
           s << additional_calibrations[i].T_SC.T();
@@ -483,21 +483,21 @@ void VioParametersReader::readConfigFile(const std::string& filename) {
               std::shared_ptr<const okvis::cameras::CameraBase>(
                   new okvis::cameras::PinholeCamera<
                       okvis::cameras::RadialTangentialDistortion8>(
-                      *(additional_calibrations[i].imageDimension)[0],
-                      *(additional_calibrations[i].imageDimension)[1],
-                      *(additional_calibrations[i].focalLength)[0],
-                      *(additional_calibrations[i].focalLength)[1],
-                      *(additional_calibrations[i].principalPoint)[0],
-                      *(additional_calibrations[i].principalPoint)[1],
+                      (*additional_calibrations[i].imageDimension)[0],
+                      (*additional_calibrations[i].imageDimension)[1],
+                      (*additional_calibrations[i].focalLength)[0],
+                      (*additional_calibrations[i].focalLength)[1],
+                      (*additional_calibrations[i].principalPoint)[0],
+                      (*additional_calibrations[i].principalPoint)[1],
                       okvis::cameras::RadialTangentialDistortion8(
-                        *(additional_calibrations[i].distortionCoefficients)[0],
-                        *(additional_calibrations[i].distortionCoefficients)[1],
-                        *(additional_calibrations[i].distortionCoefficients)[2],
-                        *(additional_calibrations[i].distortionCoefficients)[3],
-                        *(additional_calibrations[i].distortionCoefficients)[4],
-                        *(additional_calibrations[i].distortionCoefficients)[5],
-                        *(additional_calibrations[i].distortionCoefficients)[6],
-                        *(additional_calibrations[i].distortionCoefficients)[7])/*, id ?*/)),
+                        (*additional_calibrations[i].distortionCoefficients)[0],
+                        (*additional_calibrations[i].distortionCoefficients)[1],
+                        (*additional_calibrations[i].distortionCoefficients)[2],
+                        (*additional_calibrations[i].distortionCoefficients)[3],
+                        (*additional_calibrations[i].distortionCoefficients)[4],
+                        (*additional_calibrations[i].distortionCoefficients)[5],
+                        (*additional_calibrations[i].distortionCoefficients)[6],
+                        (*additional_calibrations[i].distortionCoefficients)[7])/*, id ?*/)),
               okvis::cameras::NCameraSystem::RadialTangential8/*, computeOverlaps ?*/);
           std::stringstream s;
           s << additional_calibrations[i].T_SC.T();
@@ -576,7 +576,7 @@ void VioParametersReader::readConfigFile(const std::string& filename) {
   imu_params["tau"] >> vioParameters_.imu.tau;
   imu_params["g"] >> vioParameters_.imu.g;
 
-  vioParameters_.imu.a0 = Eigen::Vector3d((double) (imu_params["a0"][0]),
+  *(vioParameters_.imu.a0) = Eigen::Vector3d((double) (imu_params["a0"][0]),
                                           (double) (imu_params["a0"][1]),
                                           (double) (imu_params["a0"][2]));
 
@@ -714,11 +714,11 @@ bool VioParametersReader::getCalibrationViaConfig(
       *(calib->imageDimension) << imageDimensionNode[0], imageDimensionNode[1];
       calib->distortionCoefficients->resize(distortionCoefficientNode.size());
       for(size_t i=0; i<distortionCoefficientNode.size(); ++i) {
-        *(calib->distortionCoefficients)[i] = distortionCoefficientNode[i];
+        (*calib->distortionCoefficients)[i] = distortionCoefficientNode[i];
       }
       *(calib->focalLength) << focalLengthNode[0], focalLengthNode[1];
       *(calib->principalPoint) << principalPointNode[0], principalPointNode[1];
-      *(calib->distortionType) = (std::string)((*it)["distortion_type"]);;
+      calib->distortionType = (std::string)((*it)["distortion_type"]);;
 
       // printf("getcalibrationviaconfig finishcalib\n");
       // fflush(stdout);
