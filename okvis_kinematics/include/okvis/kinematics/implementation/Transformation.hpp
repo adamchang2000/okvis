@@ -87,28 +87,19 @@ inline Eigen::Matrix3d rightJacobian(const Eigen::Vector3d & PhiVec) {
 //boost::shared_ptr<const Eigen::Map<MatrixXd> > features( new Eigen::Map<double>((double*) PyArray_DATA(features_np)));
 
 inline Transformation::Transformation(const Transformation & other)
-    : parameters_(other.parameters_),
-    r_(parameters_.get()),
-    q_((parameters_.get() + 3)){
+    : parameters_(other.parameters_) {
     C_ = std::allocate_shared<Eigen::Matrix3d>(Eigen::aligned_allocator<Eigen::Matrix3d>(), *(other.C_));
 }
 
 inline Transformation::Transformation(Transformation && other)
     : parameters_(std::move(other.parameters_)){
-      Eigen::Matrix<double, 7, 1>* pptr = parameters_.get();
-      r_ = std::make_shared<Eigen::Map<Eigen::Vector3d>>(pptr);
-      q_ = std::make_shared<Eigen::Map<Eigen::Quaterniond>>(pptr + 3);
       C_ = std::allocate_shared<Eigen::Matrix3d>(Eigen::aligned_allocator<Eigen::Matrix3d>(), std::move(*(other.C_)));
 }
 
 inline Transformation::Transformation() 
   : parameters_(std::allocate_shared<Eigen::Matrix<double, 7, 1>>(Eigen::aligned_allocator<Eigen::Matrix<double, 7, 1>>())){
+  *parameters_ << 0., 0., 0., 1., 0., 0., 0.;
 
-  Eigen::Matrix<double, 7, 1>* pptr = parameters_.get();
-  r_ = std::make_shared<Eigen::Map<Eigen::Vector3d>>(pptr);
-  q_ = std::make_shared<Eigen::Map<Eigen::Quaterniond>>(pptr + 3);
-  *r_ = Eigen::Vector3d(0.0, 0.0, 0.0);
-  *q_ = Eigen::Quaterniond(1.0, 0.0, 0.0, 0.0);
   C_ = std::allocate_shared<Eigen::Matrix3d>(Eigen::aligned_allocator<Eigen::Matrix3d>());
   *C_ << 1, 0, 0, 0, 1, 0, 0, 0, 1;
 }
@@ -116,22 +107,19 @@ inline Transformation::Transformation()
 inline Transformation::Transformation(const Eigen::Vector3d & r_AB,
                                       const Eigen::Quaterniond& q_AB) 
   : parameters_(std::allocate_shared<Eigen::Matrix<double, 7, 1>>(Eigen::aligned_allocator<Eigen::Matrix<double, 7, 1>>())) {
+  auto q = q_AB.normalized();
 
-  Eigen::Matrix<double, 7, 1>* pptr = parameters_.get();
-  r_ = std::make_shared<Eigen::Map<Eigen::Vector3d>>(pptr);
-  q_ = std::make_shared<Eigen::Map<Eigen::Quaterniond>>(pptr + 3);
-  *r_ = r_AB;
-  *q_ = q_AB.normalized();
+  *parameters_ << r_AB[0], r_AB[1], r_AB[2], q[0], q[1], q[2], q[3];
+
   updateC();
 }
 inline Transformation::Transformation(const Eigen::Matrix4d & T_AB)
   : parameters_(std::allocate_shared<Eigen::Matrix<double, 7, 1>>(Eigen::aligned_allocator<Eigen::Matrix<double, 7, 1>>())){
-  Eigen::Matrix<double, 7, 1>* pptr = parameters_.get();
-  r_ = std::make_shared<Eigen::Map<Eigen::Vector3d>>(pptr);
-  q_ = std::make_shared<Eigen::Map<Eigen::Quaterniond>>(pptr + 3);
-  C_ = std::allocate_shared<Eigen::Matrix3d>(Eigen::aligned_allocator<Eigen::Matrix3d>(), T_AB.topLeftCorner<3, 3>());
-  *r_ = (T_AB.topRightCorner<3, 1>());
-  *q_ = (T_AB.topLeftCorner<3, 3>());
+  auto r = T_AB.topRightCorner<3, 1>();
+  auto q = T_AB.topLeftCorner<3, 3>();
+
+  *parameters_ << r[0], r[1], r[2], q[0], q[1], q[2], q[3];
+
   assert(fabs(T_AB(3, 0)) < 1.0e-12);
   assert(fabs(T_AB(3, 1)) < 1.0e-12);
   assert(fabs(T_AB(3, 2)) < 1.0e-12);
@@ -154,7 +142,8 @@ inline bool Transformation::setCoeffs(
 inline Eigen::Matrix4d Transformation::T() const {
   Eigen::Matrix4d T_ret;
   T_ret.topLeftCorner<3, 3>() = *C_;
-  T_ret.topRightCorner<3, 1>() = *r_;
+  Eigen::Vector3d r(parameters_[0], parameters_[1], parameters_[2]);
+  T_ret.topRightCorner<3, 1>() = r;
   T_ret.bottomLeftCorner<1, 3>().setZero();
   T_ret(3, 3) = 1.0;
   return T_ret;
@@ -166,23 +155,28 @@ inline const Eigen::Matrix3d & Transformation::C() const {
 }
 
 // return the translation vector
-inline const Eigen::Map<Eigen::Vector3d> & Transformation::r() const {
-  return *r_;
+inline const Eigen::Vector3d & Transformation::r() const {
+  Eigen::Vector3d r(parameters_[0], parameters_[1], parameters_[2]);
+  return r;
 }
 
-inline const Eigen::Map<Eigen::Quaterniond> & Transformation::q() const {
-  return *q_;
+inline const Eigen::Quaterniond & Transformation::q() const {
+  Eigen::Quarterniond q(parameters_[3], parameters_[4], parameters_[5], parameters_[6]);
+  return q;
 }
 
 inline Eigen::Matrix<double, 3, 4> Transformation::T3x4() const {
   Eigen::Matrix<double, 3, 4> T3x4_ret;
   T3x4_ret.topLeftCorner<3, 3>() = *C_;
-  T3x4_ret.topRightCorner<3, 1>() = *r_;
+  Eigen::Vector3d r(parameters_[0], parameters_[1], parameters_[2]);
+  T3x4_ret.topRightCorner<3, 1>() = r;
   return T3x4_ret;
 }
 // Return a copy of the transformation inverted.
 inline Transformation Transformation::inverse() const {
-  return Transformation(-((*C_).transpose() * (*r_)), q_->inverse());
+  Eigen::Vector3d r(parameters_[0], parameters_[1], parameters_[2]);
+  Eigen::Quarterniond q(parameters_[3], parameters_[4], parameters_[5], parameters_[6]);
+  return Transformation(-((*C_).transpose() * r), q.inverse());
 }
 
 // Set this to a random transformation.
@@ -196,28 +190,30 @@ inline void Transformation::setRandom(double translationMaxMeters,
   Eigen::Vector3d axis = rotationMaxRadians * Eigen::Vector3d::Random();
   // Create a random rotation angle in radians.
   Eigen::Vector3d r = translationMaxMeters * Eigen::Vector3d::Random();
-  *r_ = r;
-  *q_ = Eigen::AngleAxisd(axis.norm(), axis.normalized());
+  auto q = Eigen::AngleAxisd(axis.norm(), axis.normalized());
+
+  *parameters_ << r[0], r[1], r[2], q[0], q[1], q[2], q[3];
+
   updateC();
 }
 
 // Setters
 inline void Transformation::set(const Eigen::Matrix4d & T_AB) {
-  *r_ = (T_AB.topRightCorner<3, 1>());
-  *q_ = (T_AB.topLeftCorner<3, 3>());
+  auto r = T_AB.topRightCorner<3, 1>();
+  auto q = T_AB.topLeftCorner<3, 3>();
+  *parameters_ << r[0], r[1], r[2], q[0], q[1], q[2], q[3];
   updateC();
 }
 inline void Transformation::set(const Eigen::Vector3d & r_AB,
                                 const Eigen::Quaternion<double> & q_AB) {
-  *r_ = r_AB;
-  *q_ = q_AB.normalized();
+  auto q_ = q_AB.normalized();
+  *parameters_ << r_AB[0], r_AB[1], r_AB[2], q[0], q[1], q[2], q[3];
   updateC();
 }
 // Set this transformation to identity
 inline void Transformation::setIdentity() {
-  q_->setIdentity();
-  r_->setZero();
-  C_->setIdentity();
+  parameters_=>setZero();
+  (*parameters_)[4] = 1.;
 }
 
 inline Transformation Transformation::Identity() {
@@ -227,7 +223,9 @@ inline Transformation Transformation::Identity() {
 // operator*
 inline Transformation Transformation::operator*(
     const Transformation & rhs) const {
-  return Transformation((*C_) * (*rhs.r_) + (*r_), (*q_) * (*rhs.q_));
+  Eigen::Vector3d r(parameters_[0], parameters_[1], parameters_[2]);
+  Eigen::Quarterniond q(parameters_[3], parameters_[4], parameters_[5], parameters_[6]);
+  return Transformation((*C_) * rhs.r() + r, q * rhs.q());
 }
 inline Eigen::Vector3d Transformation::operator*(
     const Eigen::Vector3d & rhs) const {
@@ -237,7 +235,7 @@ inline Eigen::Vector4d Transformation::operator*(
     const Eigen::Vector4d & rhs) const {
   const double s = rhs[3];
   Eigen::Vector4d retVec;
-  retVec.head<3>() = (*C_) * rhs.head<3>() + (*r_) * s;
+  retVec.head<3>() = (*C_) * rhs.head<3>() + r * s;
   retVec[3] = s;
   return retVec;
 }
@@ -245,13 +243,12 @@ inline Eigen::Vector4d Transformation::operator*(
 inline Transformation& Transformation::operator=(const Transformation & rhs) {
   parameters_ = rhs.parameters_;
   C_ = rhs.C_;
-  r_ = std::make_shared<Eigen::Map<Eigen::Vector3d>>(parameters_.get());
-  q_ = std::make_shared<Eigen::Map<Eigen::Quaterniond>>(parameters_.get() + 3);
   return *this;
 }
 
 inline void Transformation::updateC() {
-  *C_ = q_->toRotationMatrix();
+  Eigen::Quarterniond q(parameters_[3], parameters_[4], parameters_[5], parameters_[6]);
+  *C_ = q.toRotationMatrix();
 }
 
 // apply small update:
@@ -259,13 +256,15 @@ template<typename Derived_delta>
 inline bool Transformation::oplus(
     const Eigen::MatrixBase<Derived_delta> & delta) {
   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Derived_delta, 6);
-  *r_ += delta.template head<3>();
+  (*parameters_).block<3,1>(0,0) += delta.template head<3>();
   Eigen::Vector4d dq;
   double halfnorm = 0.5 * delta.template tail<3>().norm();
   dq.template head<3>() = sinc(halfnorm) * 0.5 * delta.template tail<3>();
   dq[3] = cos(halfnorm);
-  *q_ = (Eigen::Quaterniond(dq) * (*q_));
-  q_->normalize();
+  Eigen::Quarterniond q(parameters_[3], parameters_[4], parameters_[5], parameters_[6]);
+  q = (Eigen::Quaterniond(dq) * q);
+  q.>normalize();
+  (*parameters_).block<4,1>(0,3) = q;
   updateC();
   return true;
 }
