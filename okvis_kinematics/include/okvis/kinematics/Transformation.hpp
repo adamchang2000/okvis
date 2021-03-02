@@ -124,10 +124,10 @@ class Transformation
   const Eigen::Matrix3d & C() const;
 
   /// \brief Returns the translation vector r_AB (represented in frame A).
-  const Eigen::Vector3d & r() const;
+  const Eigen::Vector3d r() const;
 
   /// \brief Returns the Quaternion q_AB (as an Eigen Quaternion).
-  const Eigen::Quaterniond & q() const;
+  const Eigen::Quaterniond q() const;
 
   /// \brief Get the upper 3x4 part of the homogeneous transformation matrix T_AB.
   Eigen::Matrix<double, 3, 4> T3x4() const;

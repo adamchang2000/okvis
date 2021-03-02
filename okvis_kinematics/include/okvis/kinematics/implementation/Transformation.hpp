@@ -107,18 +107,27 @@ inline Transformation::Transformation()
 inline Transformation::Transformation(const Eigen::Vector3d & r_AB,
                                       const Eigen::Quaterniond& q_AB) 
   : parameters_(std::allocate_shared<Eigen::Matrix<double, 7, 1>>(Eigen::aligned_allocator<Eigen::Matrix<double, 7, 1>>())) {
-  auto q = q_AB.normalized();
 
-  *parameters_ << r_AB[0], r_AB[1], r_AB[2], q[0], q[1], q[2], q[3];
+
+  //std::cout << r_AB << q_AB << std::endl;
+  //fflush(stdout);
+
+  Eigen::Quaterniond q = q_AB.normalized();
+
+  Eigen::Vector3d vec = q.vec();
+  double w = q.w();
+
+
+  *parameters_ << r_AB[0], r_AB[1], r_AB[2], vec[0], vec[1], vec[2], w;
 
   updateC();
 }
 inline Transformation::Transformation(const Eigen::Matrix4d & T_AB)
   : parameters_(std::allocate_shared<Eigen::Matrix<double, 7, 1>>(Eigen::aligned_allocator<Eigen::Matrix<double, 7, 1>>())){
-  auto r = T_AB.topRightCorner<3, 1>();
-  auto q = T_AB.topLeftCorner<3, 3>();
+  Eigen::Vector3d r = T_AB.topRightCorner<3, 1>();
+  Eigen::Quaterniond q(T_AB.topLeftCorner<3, 3>());
 
-  *parameters_ << r[0], r[1], r[2], q[0], q[1], q[2], q[3];
+  *parameters_ << r[0], r[1], r[2], q.x(), q.y(), q.z(), q.w();
 
   assert(fabs(T_AB(3, 0)) < 1.0e-12);
   assert(fabs(T_AB(3, 1)) < 1.0e-12);
@@ -142,7 +151,7 @@ inline bool Transformation::setCoeffs(
 inline Eigen::Matrix4d Transformation::T() const {
   Eigen::Matrix4d T_ret;
   T_ret.topLeftCorner<3, 3>() = *C_;
-  Eigen::Vector3d r(parameters_[0], parameters_[1], parameters_[2]);
+  Eigen::Vector3d r((*parameters_)(0), (*parameters_)(1), (*parameters_)(2));
   T_ret.topRightCorner<3, 1>() = r;
   T_ret.bottomLeftCorner<1, 3>().setZero();
   T_ret(3, 3) = 1.0;
@@ -155,27 +164,27 @@ inline const Eigen::Matrix3d & Transformation::C() const {
 }
 
 // return the translation vector
-inline const Eigen::Vector3d & Transformation::r() const {
-  Eigen::Vector3d r(parameters_[0], parameters_[1], parameters_[2]);
+inline const Eigen::Vector3d Transformation::r() const {
+  Eigen::Vector3d r = (*parameters_).block<1,3>(0,0);
   return r;
 }
 
-inline const Eigen::Quaterniond & Transformation::q() const {
-  Eigen::Quarterniond q(parameters_[3], parameters_[4], parameters_[5], parameters_[6]);
+inline const Eigen::Quaterniond Transformation::q() const {
+  Eigen::Quaterniond q((*parameters_)(6), (*parameters_)(3), (*parameters_)(4), (*parameters_)(5));
   return q;
 }
 
 inline Eigen::Matrix<double, 3, 4> Transformation::T3x4() const {
   Eigen::Matrix<double, 3, 4> T3x4_ret;
   T3x4_ret.topLeftCorner<3, 3>() = *C_;
-  Eigen::Vector3d r(parameters_[0], parameters_[1], parameters_[2]);
+  Eigen::Vector3d r = (*parameters_).block<1,3>(0,0);
   T3x4_ret.topRightCorner<3, 1>() = r;
   return T3x4_ret;
 }
 // Return a copy of the transformation inverted.
 inline Transformation Transformation::inverse() const {
-  Eigen::Vector3d r(parameters_[0], parameters_[1], parameters_[2]);
-  Eigen::Quarterniond q(parameters_[3], parameters_[4], parameters_[5], parameters_[6]);
+  Eigen::Vector3d r = (*parameters_).block<1,3>(0,0);
+  Eigen::Quaterniond q((*parameters_)(6), (*parameters_)(3), (*parameters_)(4), (*parameters_)(5));
   return Transformation(-((*C_).transpose() * r), q.inverse());
 }
 
@@ -190,30 +199,30 @@ inline void Transformation::setRandom(double translationMaxMeters,
   Eigen::Vector3d axis = rotationMaxRadians * Eigen::Vector3d::Random();
   // Create a random rotation angle in radians.
   Eigen::Vector3d r = translationMaxMeters * Eigen::Vector3d::Random();
-  auto q = Eigen::AngleAxisd(axis.norm(), axis.normalized());
+  Eigen::Quaterniond q(Eigen::AngleAxisd(axis.norm(), axis.normalized()));
 
-  *parameters_ << r[0], r[1], r[2], q[0], q[1], q[2], q[3];
+  *parameters_ << r[0], r[1], r[2], q.x(), q.y(), q.z(), q.w();
 
   updateC();
 }
 
 // Setters
 inline void Transformation::set(const Eigen::Matrix4d & T_AB) {
-  auto r = T_AB.topRightCorner<3, 1>();
-  auto q = T_AB.topLeftCorner<3, 3>();
-  *parameters_ << r[0], r[1], r[2], q[0], q[1], q[2], q[3];
+  Eigen::Vector3d r = T_AB.topRightCorner<3, 1>();
+  Eigen::Quaterniond q(T_AB.topLeftCorner<3, 3>());
+  *parameters_ << r[0], r[1], r[2], q.x(), q.y(), q.z(), q.w();
   updateC();
 }
 inline void Transformation::set(const Eigen::Vector3d & r_AB,
                                 const Eigen::Quaternion<double> & q_AB) {
-  auto q_ = q_AB.normalized();
-  *parameters_ << r_AB[0], r_AB[1], r_AB[2], q[0], q[1], q[2], q[3];
+  Eigen::Quaterniond q = q_AB.normalized();
+  *parameters_ << r_AB[0], r_AB[1], r_AB[2], q.x(), q.y(), q.z(), q.w();
   updateC();
 }
 // Set this transformation to identity
 inline void Transformation::setIdentity() {
-  parameters_=>setZero();
-  (*parameters_)[4] = 1.;
+  parameters_->setZero();
+  (*parameters_)(4) = 1.;
 }
 
 inline Transformation Transformation::Identity() {
@@ -223,8 +232,8 @@ inline Transformation Transformation::Identity() {
 // operator*
 inline Transformation Transformation::operator*(
     const Transformation & rhs) const {
-  Eigen::Vector3d r(parameters_[0], parameters_[1], parameters_[2]);
-  Eigen::Quarterniond q(parameters_[3], parameters_[4], parameters_[5], parameters_[6]);
+  Eigen::Vector3d r = (*parameters_).block<1,3>(0,0);
+  Eigen::Quaterniond q((*parameters_)(6), (*parameters_)(3), (*parameters_)(4), (*parameters_)(5));
   return Transformation((*C_) * rhs.r() + r, q * rhs.q());
 }
 inline Eigen::Vector3d Transformation::operator*(
@@ -235,6 +244,7 @@ inline Eigen::Vector4d Transformation::operator*(
     const Eigen::Vector4d & rhs) const {
   const double s = rhs[3];
   Eigen::Vector4d retVec;
+  Eigen::Vector3d r = (*parameters_).block<1,3>(0,0);
   retVec.head<3>() = (*C_) * rhs.head<3>() + r * s;
   retVec[3] = s;
   return retVec;
@@ -247,7 +257,7 @@ inline Transformation& Transformation::operator=(const Transformation & rhs) {
 }
 
 inline void Transformation::updateC() {
-  Eigen::Quarterniond q(parameters_[3], parameters_[4], parameters_[5], parameters_[6]);
+  Eigen::Quaterniond q((*parameters_)(6), (*parameters_)(3), (*parameters_)(4), (*parameters_)(5));
   *C_ = q.toRotationMatrix();
 }
 
@@ -261,9 +271,9 @@ inline bool Transformation::oplus(
   double halfnorm = 0.5 * delta.template tail<3>().norm();
   dq.template head<3>() = sinc(halfnorm) * 0.5 * delta.template tail<3>();
   dq[3] = cos(halfnorm);
-  Eigen::Quarterniond q(parameters_[3], parameters_[4], parameters_[5], parameters_[6]);
+  Eigen::Quaterniond q((*parameters_)(6), (*parameters_)(3), (*parameters_)(4), (*parameters_)(5));
   q = (Eigen::Quaterniond(dq) * q);
-  q.>normalize();
+  q.normalize();
   (*parameters_).block<4,1>(0,3) = q;
   updateC();
   return true;
@@ -285,6 +295,7 @@ template<typename Derived_jacobian>
 inline bool Transformation::oplusJacobian(
     const Eigen::MatrixBase<Derived_jacobian> & jacobian) const {
   EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE(Derived_jacobian, 7, 6);
+  Eigen::Quaterniond q((*parameters_)(6), (*parameters_)(3), (*parameters_)(4), (*parameters_)(5));
   Eigen::Matrix<double, 4, 3> S = Eigen::Matrix<double, 4, 3>::Zero();
   const_cast<Eigen::MatrixBase<Derived_jacobian>&>(jacobian).setZero();
   const_cast<Eigen::MatrixBase<Derived_jacobian>&>(jacobian)
@@ -293,7 +304,7 @@ inline bool Transformation::oplusJacobian(
   S(1, 1) = 0.5;
   S(2, 2) = 0.5;
   const_cast<Eigen::MatrixBase<Derived_jacobian>&>(jacobian)
-      .template bottomRightCorner<4, 3>() = okvis::kinematics::oplus(*q_) * S;
+      .template bottomRightCorner<4, 3>() = okvis::kinematics::oplus(q) * S;
   return true;
 }
 
@@ -301,11 +312,12 @@ template <typename Derived_jacobian>
 inline bool Transformation::liftJacobian(const Eigen::MatrixBase<Derived_jacobian> & jacobian) const
 {
   EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE(Derived_jacobian, 6, 7);
+  Eigen::Quaterniond q((*parameters_)(6), (*parameters_)(3), (*parameters_)(4), (*parameters_)(5));
   const_cast<Eigen::MatrixBase<Derived_jacobian>&>(jacobian).setZero();
   const_cast<Eigen::MatrixBase<Derived_jacobian>&>(jacobian).template topLeftCorner<3,3>()
       = Eigen::Matrix3d::Identity();
   const_cast<Eigen::MatrixBase<Derived_jacobian>&>(jacobian).template bottomRightCorner<3,4>()
-      = 2*okvis::kinematics::oplus(q_->inverse()).template topLeftCorner<3,4>();
+      = 2*okvis::kinematics::oplus(q.inverse()).template topLeftCorner<3,4>();
   return true;
 }
 
