@@ -160,7 +160,7 @@ struct DifferentialPressureReading {
 // this is how we store raw measurements before more advanced filling into
 // data structures happens:
 typedef Measurement<ImuSensorReadings> ImuMeasurement;
-typedef std::deque<ImuMeasurement, Eigen::aligned_allocator<ImuMeasurement> > ImuMeasurementDeque;
+typedef std::vector<ImuMeasurement, Eigen::aligned_allocator<ImuMeasurement> > ImuMeasurementVector;
 /// \brief Camera measurement.
 struct CameraData {
   cv::Mat image;  ///< Image.
@@ -184,16 +184,16 @@ typedef Measurement<FrameData> FrameMeasurement;
 typedef Measurement<DepthCameraData> DepthCameraMeasurement;
 
 typedef Measurement<PositionReading> PositionMeasurement;
-typedef std::deque<PositionMeasurement,
-    Eigen::aligned_allocator<PositionMeasurement> > PositionMeasurementDeque;
+typedef std::vector<PositionMeasurement,
+    Eigen::aligned_allocator<PositionMeasurement> > PositionMeasurementVector;
 
 typedef Measurement<GpsPositionReading> GpsPositionMeasurement;
-typedef std::deque<GpsPositionMeasurement,
-    Eigen::aligned_allocator<GpsPositionMeasurement> > GpsPositionMeasurementDeque;
+typedef std::vector<GpsPositionMeasurement,
+    Eigen::aligned_allocator<GpsPositionMeasurement> > GpsPositionMeasurementVector;
 
 typedef Measurement<MagnetometerReading> MagnetometerMeasurement;
-typedef std::deque<MagnetometerMeasurement,
-    Eigen::aligned_allocator<MagnetometerMeasurement> > MagnetometerMeasurementDeque;
+typedef std::vector<MagnetometerMeasurement,
+    Eigen::aligned_allocator<MagnetometerMeasurement> > MagnetometerMeasurementVector;
 
 typedef Measurement<BarometerReading> BarometerMeasurement;
 

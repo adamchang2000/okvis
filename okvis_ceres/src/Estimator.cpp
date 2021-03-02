@@ -119,7 +119,7 @@ void Estimator::clearImus(){
 // Add a pose to the state.
 bool Estimator::addStates(
     okvis::MultiFramePtr multiFrame,
-    const okvis::ImuMeasurementDeque & imuMeasurements,
+    const okvis::ImuMeasurementVector & imuMeasurements,
     bool asKeyframe)
 {
   // note: this is before matching...
@@ -818,7 +818,7 @@ void Estimator::printStates(uint64_t poseId, std::ostream & buffer) const {
 
 // Initialise pose from IMU measurements. For convenience as static.
 bool Estimator::initPoseFromImu(
-    const okvis::ImuMeasurementDeque & imuMeasurements,
+    const okvis::ImuMeasurementVector & imuMeasurements,
     okvis::kinematics::Transformation & T_WS)
 {
   // set translation to zero, unit rotation
@@ -829,7 +829,7 @@ bool Estimator::initPoseFromImu(
 
   // acceleration vector
   Eigen::Vector3d acc_B = Eigen::Vector3d::Zero();
-  for (okvis::ImuMeasurementDeque::const_iterator it = imuMeasurements.begin();
+  for (okvis::ImuMeasurementVector::const_iterator it = imuMeasurements.begin();
       it < imuMeasurements.end(); ++it) {
     acc_B += it->measurement.accelerometers;
   }

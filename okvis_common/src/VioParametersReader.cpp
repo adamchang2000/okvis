@@ -652,17 +652,6 @@ bool VioParametersReader::getCalibrationViaConfig(
   // printf("getcalibrationviaconfig enter\n");
   // fflush(stdout);
 
-  std::vector<CameraCalibration,Eigen::aligned_allocator<CameraCalibration>> test_calibrations;
-
-  test_calibrations.clear();
-  CameraCalibration calib;
-  calib.T_SC = okvis::kinematics::Transformation(Eigen::Matrix4d::Identity());
-  calib.imageDimension << 1., 2.;
-  calib.focalLength << 10., 15.;
-  calib.principalPoint << 200., 100.;
-  calib.distortionType = "radialtangential";
-  test_calibrations.push_back(calib);
-
   // printf("THIS TEST WORKED\n");
   // fflush(stdout);
 

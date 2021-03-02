@@ -280,8 +280,8 @@ class ThreadedKFVio : public VioInterface {
    * @remark This function is threadsafe.
    * @return The IMU Measurement spanning at least the time between start and end.
    */
-  okvis::ImuMeasurementDeque getImuMeasurments(okvis::Time& start,
-                                               okvis::Time& end);
+  void getImuMeasurments(okvis::Time& start,
+                                               okvis::Time& end, okvis::ImuMeasurementVector &imuData);
 
   /**
    * @brief Remove IMU measurements from the internal buffer.
@@ -366,10 +366,10 @@ class ThreadedKFVio : public VioInterface {
   okvis::threadsafe::ThreadSafeQueue<std::shared_ptr<okvis::MultiFrame>> matchedFrames_;
   /// \brief The IMU measurements.
   /// \warning Lock with imuMeasurements_mutex_.
-  okvis::ImuMeasurementDeque imuMeasurements_;
+  okvis::ImuMeasurementVector imuMeasurements_;
   /// \brief The Position measurements.
   /// \warning Lock with positionMeasurements_mutex_.
-  okvis::PositionMeasurementDeque positionMeasurements_;
+  okvis::PositionMeasurementVector positionMeasurements_;
   /// The queue containing the results of the optimization or IMU propagation ready for publishing.
   okvis::threadsafe::ThreadSafeQueue<OptimizationResults> optimizationResults_;
   /// The queue containing visualization data that is ready to be displayed.

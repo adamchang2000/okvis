@@ -130,7 +130,7 @@ class Estimator : public VioBackendInterface
    * @return True if successful.
    */
   bool addStates(okvis::MultiFramePtr multiFrame,
-                 const okvis::ImuMeasurementDeque & imuMeasurements,
+                 const okvis::ImuMeasurementVector & imuMeasurements,
                  bool asKeyframe);
 
   /**
@@ -190,7 +190,7 @@ class Estimator : public VioBackendInterface
    * @return True if successful.
    */
   static bool initPoseFromImu(
-      const okvis::ImuMeasurementDeque & imuMeasurements,
+      const okvis::ImuMeasurementVector & imuMeasurements,
       okvis::kinematics::Transformation & T_WS);
 
   /**

@@ -118,7 +118,7 @@ class VioBackendInterface {
    * @return True if successful.
    */
   virtual bool addStates(okvis::MultiFramePtr multiFrame,
-                         const okvis::ImuMeasurementDeque & imuMeasurements,
+                         const okvis::ImuMeasurementVector & imuMeasurements,
                          bool asKeyframe) = 0;
 
   /**

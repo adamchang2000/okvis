@@ -125,7 +125,7 @@ class Frontend : public VioFrontendInterface {
    * @param[out] jacobian Jacobian w.r.t. start states.
    * @return True on success.
    */
-  virtual bool propagation(const okvis::ImuMeasurementDeque & imuMeasurements,
+  virtual bool propagation(const okvis::ImuMeasurementVector & imuMeasurements,
                            const okvis::ImuParameters & imuParams,
                            okvis::kinematics::Transformation& T_WS_propagated,
                            okvis::SpeedAndBias & speedAndBiases,

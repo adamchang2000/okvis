@@ -270,7 +270,7 @@ bool Frontend::dataAssociationAndInitialization(
 }
 
 // Propagates pose, speeds and biases with given IMU measurements.
-bool Frontend::propagation(const okvis::ImuMeasurementDeque & imuMeasurements,
+bool Frontend::propagation(const okvis::ImuMeasurementVector & imuMeasurements,
                            const okvis::ImuParameters & imuParams,
                            okvis::kinematics::Transformation& T_WS_propagated,
                            okvis::SpeedAndBias & speedAndBiases,

@@ -56,7 +56,7 @@ namespace okvis {
 namespace ceres {
 
 // Construct with measurements and parameters.
-ImuError::ImuError(const okvis::ImuMeasurementDeque & imuMeasurements,
+ImuError::ImuError(const okvis::ImuMeasurementVector & imuMeasurements,
                    const okvis::ImuParameters & imuParameters,
                    const okvis::Time& t_0, const okvis::Time& t_1) {
   setImuMeasurements(imuMeasurements);
@@ -112,7 +112,7 @@ int ImuError::redoPreintegration(const okvis::kinematics::Transformation& /*T_WS
   double Delta_t = 0;
   bool hasStarted = false;
   int i = 0;
-  for (okvis::ImuMeasurementDeque::const_iterator it = imuMeasurements_.begin();
+  for (okvis::ImuMeasurementVector::const_iterator it = imuMeasurements_.begin();
       it != imuMeasurements_.end(); ++it) {
 
     Eigen::Vector3d omega_S_0 = it->measurement.gyroscopes;
@@ -284,7 +284,7 @@ int ImuError::redoPreintegration(const okvis::kinematics::Transformation& /*T_WS
 }
 
 // Propagates pose, speeds and biases with given IMU measurements.
-int ImuError::propagation(const okvis::ImuMeasurementDeque & imuMeasurements,
+int ImuError::propagation(const okvis::ImuMeasurementVector & imuMeasurements,
                           const okvis::ImuParameters & imuParams,
                           okvis::kinematics::Transformation& T_WS,
                           okvis::SpeedAndBias & speedAndBiases,
@@ -327,7 +327,7 @@ int ImuError::propagation(const okvis::ImuMeasurementDeque & imuMeasurements,
   double Delta_t = 0;
   bool hasStarted = false;
   int i = 0;
-  for (okvis::ImuMeasurementDeque::const_iterator it = imuMeasurements.begin();
+  for (okvis::ImuMeasurementVector::const_iterator it = imuMeasurements.begin();
         it != imuMeasurements.end(); ++it) {
 
     Eigen::Vector3d omega_S_0 = it->measurement.gyroscopes;

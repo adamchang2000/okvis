@@ -103,7 +103,7 @@ class ImuError :
   /// \@param[in] imuParameters The parameters to be used.
   /// \@param[in] t_0 Start time.
   /// \@param[in] t_1 End time.
-  ImuError(const okvis::ImuMeasurementDeque & imuMeasurements,
+  ImuError(const okvis::ImuMeasurementVector & imuMeasurements,
            const okvis::ImuParameters & imuParameters, const okvis::Time& t_0,
            const okvis::Time& t_1);
 
@@ -120,7 +120,7 @@ class ImuError :
    * @param[out] jacobian Jacobian w.r.t. start states.
    * @return Number of integration steps.
    */
-  static int propagation(const okvis::ImuMeasurementDeque & imuMeasurements,
+  static int propagation(const okvis::ImuMeasurementVector & imuMeasurements,
                          const okvis::ImuParameters & imuParams,
                          okvis::kinematics::Transformation& T_WS,
                          okvis::SpeedAndBias & speedAndBiases,
@@ -148,7 +148,7 @@ class ImuError :
 
   /// \brief (Re)set the measurements
   /// \@param[in] imuMeasurements All the IMU measurements.
-  void setImuMeasurements(const okvis::ImuMeasurementDeque& imuMeasurements) {
+  void setImuMeasurements(const okvis::ImuMeasurementVector& imuMeasurements) {
     imuMeasurements_ = imuMeasurements;
   }
 
@@ -173,7 +173,7 @@ class ImuError :
   }
 
   /// \brief Get the IMU measurements.
-  const okvis::ImuMeasurementDeque& imuMeasurements() const {
+  const okvis::ImuMeasurementVector& imuMeasurements() const {
     return imuMeasurements_;
   }
 
@@ -239,7 +239,7 @@ class ImuError :
   okvis::ImuParameters imuParameters_; ///< The IMU parameters.
 
   // measurements
-  okvis::ImuMeasurementDeque imuMeasurements_; ///< The IMU measurements used. Must be spanning t0_ - t1_.
+  okvis::ImuMeasurementVector imuMeasurements_; ///< The IMU measurements used. Must be spanning t0_ - t1_.
 
   // times
   okvis::Time t0_; ///< The start time (i.e. time of the first set of states).

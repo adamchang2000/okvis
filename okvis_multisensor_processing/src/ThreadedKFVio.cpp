@@ -90,6 +90,26 @@ ThreadedKFVio::ThreadedKFVio(okvis::VioParameters& parameters)
       //poseGraph_(vocab_file_path, parameters) 
       {
   setBlocking(false);
+
+  printf("push test inside tkfv\n");
+  fflush(stdout);
+
+
+  okvis::ImuMeasurementVector testdq;
+
+  for (double i = 0; i < 3000; i++) {
+    okvis::ImuMeasurement data;
+    data.measurement.gyroscopes << i, i, i;
+    testdq.push_back(data);
+  }
+
+  printf("front dudes %f %f\n", testdq[0].measurement.gyroscopes[0], testdq[0].measurement.gyroscopes[1]);
+  printf("5 back dudes dudes %f %f\n", testdq[testdq.size() - 5].measurement.gyroscopes[0], testdq[testdq.size() - 5].measurement.gyroscopes[1]);
+  fflush(stdout);
+
+  printf("passed my push test inside tkfv\n");
+  fflush(stdout);
+
   init();
 }
 #endif
@@ -141,6 +161,9 @@ void ThreadedKFVio::init() {
 // Start all threads.
 void ThreadedKFVio::startThreads() {
 
+
+  printf("starting %d frame consumer loops\n", numCameras_);
+  fflush(stdout);
   // consumer threads
   for (size_t i = 0; i < numCameras_; ++i) {
     frameConsumerThreads_.emplace_back(&ThreadedKFVio::frameConsumerLoop, this, i);
@@ -352,12 +375,16 @@ void ThreadedKFVio::frameConsumerLoop(size_t cameraIndex) {
   TimerSwitchable waitForFrameSynchronizerMutexTimer2("1.3.1 waitForFrameSynchronizerMutex2"+std::to_string(cameraIndex),true);
   TimerSwitchable waitForMatchingThreadTimer("1.4 waitForMatchingThread"+std::to_string(cameraIndex),true);
 
-
+  int test_i = 0;
   for (;;) {
+    test_i++;
+    printf("starting up for loop iter ci: %d %d\n", cameraIndex, test_i);
+    fflush(stdout);
     // get data and check for termination request
     if (cameraMeasurementsReceived_[cameraIndex]->PopBlocking(&frame) == false) {
       return;
     }
+
     beforeDetectTimer.start();
     {  // lock the frame synchronizer
       waitForFrameSynchronizerMutexTimer.start();
@@ -397,8 +424,22 @@ void ThreadedKFVio::frameConsumerLoop(size_t cameraIndex) {
                           imuDataEndTime < imuMeasurements_.back().timeStamp,
                           "Waiting for up to date imu data seems to have failed!");
 
-    okvis::ImuMeasurementDeque imuData = getImuMeasurments(imuDataBeginTime,
-                                                           imuDataEndTime);
+    printf("inside frameconsumerloop %d (%d), getting imu data\n", cameraIndex, test_i);
+
+    okvis::ImuMeasurementVector imuData;
+    getImuMeasurments(imuDataBeginTime, imuDataEndTime, imuData);
+
+    printf("inside frameconsumerloop %d (%d), got imu data %d\n", cameraIndex, test_i, imuData.size());
+    fflush(stdout);
+
+    printf("testing the data inside getimumeasurementsvector %d\n", cameraIndex);
+    fflush(stdout);
+
+    printf("%d %f %f %f\n", cameraIndex, imuData[0].measurement.gyroscopes[0], imuData[0].measurement.gyroscopes[1], imuData[0].measurement.gyroscopes[2]);
+    printf("%d %f %f %f\n", cameraIndex, imuData[0].measurement.accelerometers[0], imuData[0].measurement.accelerometers[1], imuData[0].measurement.accelerometers[2]);
+
+    printf("%d %f %f %f\n", cameraIndex, imuData[20].measurement.gyroscopes[0], imuData[20].measurement.gyroscopes[1], imuData[20].measurement.gyroscopes[2]);
+    printf("%d %f %f %f\n", cameraIndex, imuData[20].measurement.accelerometers[0], imuData[20].measurement.accelerometers[1], imuData[20].measurement.accelerometers[2]);
 
     // if imu_data is empty, either end_time > begin_time or
     // no measurements in timeframe, should not happen, as we waited for measurements
@@ -413,8 +454,13 @@ void ThreadedKFVio::frameConsumerLoop(size_t cameraIndex) {
       continue;
     }
 
+    printf("inside frameconsumerloop %d (%d), here1\n", cameraIndex, test_i);
+    fflush(stdout);
+
     // get T_WC(camIndx) for detectAndDescribe()
     if (estimator_.numFrames() == 0) {
+      printf("inside frameconsumerloop %d (%d), here2\n", cameraIndex, test_i);
+      fflush(stdout);
       // first frame ever
       bool success = okvis::Estimator::initPoseFromImu(imuData, T_WS);
       {
@@ -424,13 +470,21 @@ void ThreadedKFVio::frameConsumerLoop(size_t cameraIndex) {
         lastOptimizedSpeedAndBiases_.segment<3>(6) = imu_params_.a0;
         lastOptimizedStateTimestamp_ = multiFrame->timestamp();
       }
+
+      printf("inside frameconsumer loop, success initposefromimu? %d\n", success);
+      fflush(stdout);
+
       OKVIS_ASSERT_TRUE_DBG(Exception, success,
           "pose could not be initialized from imu measurements.");
       if (!success) {
         beforeDetectTimer.stop();
         continue;
       }
+      printf("inside frameconsumerloop %d (%d), here4\n", cameraIndex, test_i);
+      fflush(stdout);
     } else {
+      printf("inside frameconsumerloop %d (%d), here3\n", cameraIndex, test_i);
+      fflush(stdout);
       // get old T_WS
       propagationTimer.start();
       okvis::ceres::ImuError::propagation(imuData, parameters_.imu, T_WS,
@@ -438,6 +492,8 @@ void ThreadedKFVio::frameConsumerLoop(size_t cameraIndex) {
                                           multiFrame->timestamp());
       propagationTimer.stop();
     }
+    printf("inside frameconsumerloop %d (%d), here5\n", cameraIndex, test_i);
+    fflush(stdout);
     okvis::kinematics::Transformation T_WC = T_WS
         * (*parameters_.nCameraSystem.T_SC(frame->sensorId));
     beforeDetectTimer.stop();
@@ -446,6 +502,9 @@ void ThreadedKFVio::frameConsumerLoop(size_t cameraIndex) {
     detectTimer.stop();
     afterDetectTimer.start();
 
+    printf("inside frameconsumerloop %d (%d), here6\n", cameraIndex, test_i);
+    fflush(stdout);
+
     bool push = false;
     {  // we now tell frame synchronizer that detectAndDescribe is done for MF with our timestamp
       waitForFrameSynchronizerMutexTimer2.start();
@@ -453,22 +512,43 @@ void ThreadedKFVio::frameConsumerLoop(size_t cameraIndex) {
       waitForFrameSynchronizerMutexTimer2.stop();
       frameSynchronizer_.detectionEndedForMultiFrame(multiFrame->id());
 
+    printf("inside frameconsumerloop %d (%d), here7\n", cameraIndex, test_i);
+    fflush(stdout);
+
       if (frameSynchronizer_.detectionCompletedForAllCameras(
           multiFrame->id())) {
 //        LOG(INFO) << "detection completed for multiframe with id "<< multi_frame->id();
+        printf("inside frameconsumerloop %d (%d), here8\n", cameraIndex, test_i);
+        fflush(stdout);
         push = true;
       }
+
+        printf("inside frameconsumerloop %d (%d), here11\n", cameraIndex, test_i);
+        fflush(stdout);
+
     }  // unlocking frame synchronizer
+    printf("inside frameconsumerloop %d (%d), here12\n", cameraIndex, test_i);
+    fflush(stdout);
     afterDetectTimer.stop();
+    printf("inside frameconsumerloop %d (%d), here13\n", cameraIndex, test_i);
+    fflush(stdout);
     if (push) {
+      printf("inside frameconsumerloop %d (%d), here9\n", cameraIndex, test_i);
+      fflush(stdout);
       // use queue size 1 to propagate a congestion to the _cameraMeasurementsReceived queue
       // and check for termination request
       waitForMatchingThreadTimer.start();
       if (keypointMeasurements_.PushBlockingIfFull(multiFrame, 1) == false) {
         return;
       }
+      printf("inside frameconsumerloop %d (%d), here10\n", cameraIndex, test_i);
+      fflush(stdout);
       waitForMatchingThreadTimer.stop();
     }
+
+    printf("finishing up for loop iter ci: %d %d\n", cameraIndex, test_i);
+    fflush(stdout);
+
   }
 }
 
@@ -506,8 +586,8 @@ void ThreadedKFVio::matchingLoop() {
         imuDataEndTime < imuMeasurements_.back().timeStamp,
         "Waiting for up to date imu data seems to have failed!");
 
-    okvis::ImuMeasurementDeque imuData = getImuMeasurments(imuDataBeginTime,
-                                                           imuDataEndTime);
+    okvis::ImuMeasurementVector imuData;
+    getImuMeasurments(imuDataBeginTime, imuDataEndTime, imuData);
 
     prepareToAddStateTimer.stop();
     // if imu_data is empty, either end_time > begin_time or
@@ -684,15 +764,16 @@ void ThreadedKFVio::imuConsumerLoop() {
         end = &data.timeStamp;
       }
       std::cout << "imumeasure size " << imuMeasurements_.size() << std::endl;
-      if (imuMeasurements_.size() > 0) {
-        std::cout << imuMeasurements_.back().timeStamp << std::endl;
-        std::cout << imuMeasurements_.front().timeStamp << std::endl;
-        std::cout << data.timeStamp << std::endl;
-      }
       fflush(stdout);
+      // if (imuMeasurements_.size() > 0) {
+      //   std::cout << imuMeasurements_.back().timeStamp << std::endl;
+      //   std::cout << imuMeasurements_.front().timeStamp << std::endl;
+      //   std::cout << data.timeStamp << std::endl;
+      // }
+      // fflush(stdout);
       imuMeasurements_.push_back(data);
-      printf("got past this pushback\n");
-      fflush(stdout);
+      // printf("got past this pushback\n");
+      // fflush(stdout);
     }  // unlock _imuMeasurements_mutex
 
     // notify other threads that imu data with timeStamp is here.
@@ -800,20 +881,20 @@ void ThreadedKFVio::debugDisplay() {
 
 
 // Get a subset of the recorded IMU measurements.
-okvis::ImuMeasurementDeque ThreadedKFVio::getImuMeasurments(
-    okvis::Time& imuDataBeginTime, okvis::Time& imuDataEndTime) {
+void ThreadedKFVio::getImuMeasurments(okvis::Time& imuDataBeginTime,
+                                               okvis::Time& imuDataEndTime, okvis::ImuMeasurementVector &imuData) {
   // sanity checks:
   // if end time is smaller than begin time, return empty queue.
   // if begin time is larger than newest imu time, return empty queue.
   if (imuDataEndTime < imuDataBeginTime
       || imuDataBeginTime > imuMeasurements_.back().timeStamp)
-    return okvis::ImuMeasurementDeque();
+    return;
 
   std::lock_guard<std::mutex> lock(imuMeasurements_mutex_);
   // get iterator to imu data before previous frame
-  okvis::ImuMeasurementDeque::iterator first_imu_package = imuMeasurements_
+  okvis::ImuMeasurementVector::iterator first_imu_package = imuMeasurements_
       .begin();
-  okvis::ImuMeasurementDeque::iterator last_imu_package =
+  okvis::ImuMeasurementVector::iterator last_imu_package =
       imuMeasurements_.end();
   // TODO go backwards through queue. Is probably faster.
   for (auto iter = imuMeasurements_.begin(); iter != imuMeasurements_.end();
@@ -832,8 +913,12 @@ okvis::ImuMeasurementDeque ThreadedKFVio::getImuMeasurments(
     }
   }
 
-  // create copy of imu buffer
-  return okvis::ImuMeasurementDeque(first_imu_package, last_imu_package);
+  for (auto imu_iter = first_imu_package; imu_iter != last_imu_package; ++imu_iter) {
+    imuData.push_back(*imu_iter);
+  }
+
+  printf("returning from getimumeasurements with %d\n", imuData.size());
+
 }
 
 // Remove IMU measurements from the internal buffer.
@@ -842,7 +927,7 @@ int ThreadedKFVio::deleteImuMeasurements(const okvis::Time& eraseUntil) {
   if (imuMeasurements_.front().timeStamp > eraseUntil)
     return 0;
 
-  okvis::ImuMeasurementDeque::iterator eraseEnd;
+  okvis::ImuMeasurementVector::iterator eraseEnd;
   int removed = 0;
   for (auto it = imuMeasurements_.begin(); it != imuMeasurements_.end(); ++it) {
     eraseEnd = it;
