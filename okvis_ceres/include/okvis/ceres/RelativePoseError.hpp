@@ -67,10 +67,10 @@ class RelativePoseError : public ::ceres::SizedCostFunction<
   static const int kNumResiduals = 6;
 
   /// \brief The information matrix type (6x6).
-  typedef Eigen::Matrix<double, 6, 6> information_t;
+  typedef Eigen::Matrix<double, 6, 6, Eigen::DontAlign> information_t;
 
   /// \brief The covariance matrix type (same as information).
-  typedef Eigen::Matrix<double, 6, 6> covariance_t;
+  typedef Eigen::Matrix<double, 6, 6, Eigen::DontAlign> covariance_t;
 
   /// \brief Default constructor.
   RelativePoseError();

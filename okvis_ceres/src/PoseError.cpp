@@ -46,7 +46,7 @@ namespace ceres {
 
 // Construct with measurement and information matrix.
 PoseError::PoseError(const okvis::kinematics::Transformation & measurement,
-                     const Eigen::Matrix<double, 6, 6> & information) {
+                     const Eigen::Matrix<double, 6, 6, Eigen::DontAlign> & information) {
   setMeasurement(measurement);
   setInformation(information);
 }
@@ -56,7 +56,7 @@ PoseError::PoseError(const okvis::kinematics::Transformation & measurement,
                      double translationVariance, double rotationVariance) {
   setMeasurement(measurement);
 
-  information_t information;
+  Eigen::Matrix<double, 6, 6, Eigen::DontAlign> information;
   information.setZero();
   information.topLeftCorner<3, 3>() = Eigen::Matrix3d::Identity() * 1.0
       / translationVariance;
@@ -68,11 +68,18 @@ PoseError::PoseError(const okvis::kinematics::Transformation & measurement,
 
 // Set the information.
 void PoseError::setInformation(const information_t & information) {
+  printf("set information again... \n");
+  fflush(stdout);
+
   information_ = information;
-  covariance_ = information.inverse();
+  covariance_ = information_.inverse();
+
   // perform the Cholesky decomposition on order to obtain the correct error weighting
   Eigen::LLT<information_t> lltOfInformation(information_);
   squareRootInformation_ = lltOfInformation.matrixL().transpose();
+
+  printf("exiting set information\n");
+  fflush(stdout);
 }
 
 // This evaluates the error term and additionally computes the Jacobians.
@@ -133,7 +140,6 @@ bool PoseError::EvaluateWithMinimalJacobians(double const* const * parameters,
       }
     }
   }
-
   return true;
 }
 

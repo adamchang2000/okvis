@@ -54,8 +54,6 @@ namespace ceres {
 class PoseError : public ::ceres::SizedCostFunction<6 /* number of residuals */,
     7 /* size of first parameter */>, public ErrorInterface {
  public:
-
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
 
   /// \brief The base class type.
@@ -64,11 +62,9 @@ class PoseError : public ::ceres::SizedCostFunction<6 /* number of residuals */,
   /// \brief The number of residuals (6).
   static const int kNumResiduals = 6;
 
-  /// \brief The information matrix type (6x6).
-  typedef Eigen::Matrix<double, 6, 6> information_t;
+  typedef Eigen::Matrix<double, 6, 6, Eigen::DontAlign> information_t;
 
-  /// \brief The covariance matrix type (same as information).
-  typedef Eigen::Matrix<double, 6, 6> covariance_t;
+  typedef Eigen::Matrix<double, 6, 6, Eigen::DontAlign> covariance_t;
 
   /// \brief Default constructor.
   PoseError() {}
@@ -77,7 +73,7 @@ class PoseError : public ::ceres::SizedCostFunction<6 /* number of residuals */,
   /// @param[in] measurement The measurement.
   /// @param[in] information The information (weight) matrix.
   PoseError(const okvis::kinematics::Transformation & measurement,
-            const Eigen::Matrix<double, 6, 6> & information);
+            const Eigen::Matrix<double, 6, 6, Eigen::DontAlign> & information);
 
   /// \brief Construct with measurement and variance.
   /// @param[in] measurement The measurement.
@@ -121,7 +117,7 @@ class PoseError : public ::ceres::SizedCostFunction<6 /* number of residuals */,
 
   /// \brief Get the covariance matrix.
   /// \return The inverse information (covariance) matrix.
-  const information_t& covariance() const {
+  const covariance_t& covariance() const {
     return covariance_;
   }
 
@@ -175,14 +171,27 @@ class PoseError : public ::ceres::SizedCostFunction<6 /* number of residuals */,
 
  protected:
 
-  // the measurement
-  okvis::kinematics::Transformation measurement_; ///< The pose measurement.
+  struct test_struct {
+  public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    Eigen::Vector2d test_mat2;
+    Eigen::Vector3d test_mat3;
+    Eigen::Matrix<double, 7, 1> test_mat21;
+    Eigen::Vector3d test_mat31;
+    Eigen::Matrix<double, 4, 1, Eigen::DontAlign> test_mat4;
+  };
+
+  struct test_struct testt;
 
   // weighting related
-  information_t information_; ///< The 6x6 information matrix.
-  information_t squareRootInformation_; ///< The 6x6 square root information matrix.
-  covariance_t covariance_; ///< The 6x6 covariance matrix.
+  Eigen::Matrix<double, 6, 6, Eigen::DontAlign> information_; ///< The 6x6 information matrix.
+  Eigen::Matrix<double, 6, 6, Eigen::DontAlign> squareRootInformation_; ///< The 6x6 square root information matrix.
+  Eigen::Matrix<double, 6, 6, Eigen::DontAlign> covariance_; ///< The 6x6 covariance matrix.
 
+  // the measurement
+  okvis::kinematics::Transformation measurement_; ///< The pose measurement.
+public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 }  // namespace ceres

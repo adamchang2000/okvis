@@ -127,6 +127,10 @@ bool Estimator::addStates(
   okvis::kinematics::Transformation T_WS;
   okvis::SpeedAndBias speedAndBias;
   if (statesMap_.empty()) {
+
+    printf("statesmap empty, initing pose\n");
+    fflush(stdout);
+
     // in case this is the first frame ever, let's initialize the pose:
     bool success0 = initPoseFromImu(imuMeasurements, T_WS);
     OKVIS_ASSERT_TRUE_DBG(Exception, success0,
@@ -136,6 +140,10 @@ bool Estimator::addStates(
     speedAndBias.setZero();
     speedAndBias.segment<3>(6) = imuParametersVec_.at(0).a0;
   } else {
+
+    printf("statesmap not empty\n");
+    fflush(stdout);
+
     // get the previous states
     uint64_t T_WS_id = statesMap_.rbegin()->second.id;
     uint64_t speedAndBias_id = statesMap_.rbegin()->second.sensors.at(SensorStates::Imu)
@@ -162,6 +170,9 @@ bool Estimator::addStates(
       return false;
     }
   }
+
+  printf("made it past first if statement\n");
+  fflush(stdout);
 
   // create a states object:
   States states(asKeyframe, multiFrame->id(), multiFrame->timestamp());
@@ -243,14 +254,24 @@ bool Estimator::addStates(
     states.sensors.at(SensorStates::Imu).push_back(imuInfo);
   }
 
+  printf("got past all that propogation stuff\n");
+  fflush(stdout);
+
   // depending on whether or not this is the very beginning, we will add priors or relative terms to the last state:
   if (statesMap_.size() == 1) {
     // let's add a prior
     Eigen::Matrix<double,6,6> information = Eigen::Matrix<double,6,6>::Zero();
     information(5,5) = 1.0e8; information(0,0) = 1.0e8; information(1,1) = 1.0e8; information(2,2) = 1.0e8;
-    std::shared_ptr<ceres::PoseError > poseError(new ceres::PoseError(T_WS, information));
+
+    printf("the first pose error of death\n");
+    fflush(stdout);
+
+    std::shared_ptr<ceres::PoseError > poseError = std::allocate_shared<ceres::PoseError>(Eigen::aligned_allocator<ceres::PoseError>(), T_WS, information);
     /*auto id2= */ mapPtr_->addResidualBlock(poseError,NULL,poseParameterBlock);
     //mapPtr_->isJacobianCorrect(id2,1.0e-6);
+
+    printf("got past the first pose error of death\n");
+    fflush(stdout);
 
     // sensor states
     for (size_t i = 0; i < extrinsicsEstimationParametersVec_.size(); ++i) {
@@ -260,8 +281,12 @@ bool Estimator::addStates(
       double rotationVariance = rotationStdev*rotationStdev;
       if(translationVariance>1.0e-16 && rotationVariance>1.0e-16){
         const okvis::kinematics::Transformation T_SC = *multiFrame->T_SC(i);
+        printf("im gonna gues here, creating a poseerror\n");
+        fflush(stdout);
         std::shared_ptr<ceres::PoseError > cameraPoseError(
               new ceres::PoseError(T_SC, translationVariance, rotationVariance));
+        printf("past creating a poseerror\n");
+        fflush(stdout);
         // add to map
         mapPtr_->addResidualBlock(
             cameraPoseError,
@@ -872,6 +897,8 @@ void Estimator::optimize(size_t numIter, size_t /*numThreads*/,
   //mapPtr_->options.gradient_tolerance = 1e-12;
   //mapPtr_->options.jacobi_scaling = false;
 #ifdef USE_OPENMP
+  printf("using openmp!\n");
+  fflush(stdout);
     mapPtr_->options.num_threads = numThreads;
 #endif
   mapPtr_->options.max_num_iterations = numIter;
@@ -882,16 +909,33 @@ void Estimator::optimize(size_t numIter, size_t /*numThreads*/,
     mapPtr_->options.minimizer_progress_to_stdout = false;
   }
 
+  printf("calling solver in opt\n");
+  fflush(stdout);
+
   // call solver
   mapPtr_->solve();
+
+  printf("called solver in opt\n");
+  fflush(stdout);
 
   // update landmarks
   {
     for(auto it = landmarksMap_.begin(); it!=landmarksMap_.end(); ++it){
-      Eigen::MatrixXd H(3,3);
-      mapPtr_->getLhs(it->first,H);
+      printf("landmarksmap for loop begin\n");
+      fflush(stdout);
+      printf("boutta call lhs\n");
+      fflush(stdout);
+      Eigen::Matrix3d H = mapPtr_->getLhs(it->first);
+
+      printf("made it past lhs\n");
+      fflush(stdout);
+
       Eigen::SelfAdjointEigenSolver< Eigen::Matrix3d > saes(H);
       Eigen::Vector3d eigenvalues = saes.eigenvalues();
+
+      printf("got the eigenvalues\n");
+      fflush(stdout);
+
       const double smallest = (eigenvalues[0]);
       const double largest = (eigenvalues[2]);
       if(smallest<1.0e-12){
@@ -901,6 +945,12 @@ void Estimator::optimize(size_t numIter, size_t /*numThreads*/,
         // OK, well constrained
         it->second.quality = sqrt(smallest)/sqrt(largest);
       }
+
+      printf("gonna call estimate()\n");
+      fflush(stdout);
+
+      std::cout << it->second.point << std::endl;
+      fflush(stdout);
 
       // update coordinates
       it->second.point = std::static_pointer_cast<okvis::ceres::HomogeneousPointParameterBlock>(

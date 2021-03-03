@@ -289,8 +289,8 @@ int ImuError::propagation(const okvis::ImuMeasurementVector & imuMeasurements,
                           okvis::kinematics::Transformation& T_WS,
                           okvis::SpeedAndBias & speedAndBiases,
                           const okvis::Time & t_start,
-                          const okvis::Time & t_end, covariance_t* covariance,
-                          jacobian_t* jacobian) {
+                          const okvis::Time & t_end, Eigen::Matrix<double, 15, 15>* covariance,
+                          Eigen::Matrix<double, 15, 15>* jacobian) {
 
   // now the propagation
   okvis::Time time = t_start;

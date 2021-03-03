@@ -65,10 +65,10 @@ class HomogeneousPointError : public ::ceres::SizedCostFunction<
   static const int kNumResiduals = 3;
 
   /// \brief The information matrix type (3x3).
-  typedef Eigen::Matrix<double, 3, 3> information_t;
+  typedef Eigen::Matrix<double, 3, 3, Eigen::DontAlign> information_t;
 
   /// \brief The covariance matrix type (same as information).
-  typedef Eigen::Matrix<double, 3, 3> covariance_t;
+  typedef Eigen::Matrix<double, 3, 3, Eigen::DontAlign> covariance_t;
 
   /// \brief Default constructor.
   HomogeneousPointError();

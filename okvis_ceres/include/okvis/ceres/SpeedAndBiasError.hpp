@@ -67,10 +67,10 @@ class SpeedAndBiasError : public ::ceres::SizedCostFunction<
   static const int kNumResiduals = 9;
 
   /// \brief The information matrix type (9x9).
-  typedef Eigen::Matrix<double, 9, 9> information_t;
+  typedef Eigen::Matrix<double, 9, 9, Eigen::DontAlign> information_t;
 
   /// \brief The covariance matrix type (same as information).
-  typedef Eigen::Matrix<double, 9, 9> covariance_t;
+  typedef Eigen::Matrix<double, 9, 9, Eigen::DontAlign> covariance_t;
 
   /// \brief Default constructor.
   SpeedAndBiasError();

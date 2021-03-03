@@ -75,20 +75,20 @@ class ImuError :
   static const int kNumResiduals = 15;
 
   /// \brief The type of the covariance.
-  typedef Eigen::Matrix<double, 15, 15> covariance_t;
+  typedef Eigen::Matrix<double, 15, 15, Eigen::DontAlign> covariance_t;
 
   /// \brief The type of the information (same matrix dimension as covariance).
   typedef covariance_t information_t;
 
   /// \brief The type of hte overall Jacobian.
-  typedef Eigen::Matrix<double, 15, 15> jacobian_t;
+  typedef Eigen::Matrix<double, 15, 15, Eigen::DontAlign> jacobian_t;
 
   /// \brief The type of the Jacobian w.r.t. poses --
   /// \warning This is w.r.t. minimal tangential space coordinates...
-  typedef Eigen::Matrix<double, 15, 7> jacobian0_t;
+  typedef Eigen::Matrix<double, 15, 7, Eigen::DontAlign> jacobian0_t;
 
   /// \brief The type of Jacobian w.r.t. Speed and biases
-  typedef Eigen::Matrix<double, 15, 9> jacobian1_t;
+  typedef Eigen::Matrix<double, 15, 9, Eigen::DontAlign> jacobian1_t;
 
   /// \brief Default constructor -- assumes information recomputation.
   ImuError() {
@@ -125,8 +125,8 @@ class ImuError :
                          okvis::kinematics::Transformation& T_WS,
                          okvis::SpeedAndBias & speedAndBiases,
                          const okvis::Time& t_start, const okvis::Time& t_end,
-                         covariance_t* covariance = 0,
-                         jacobian_t* jacobian = 0);
+                         Eigen::Matrix<double, 15, 15>* covariance = 0,
+                         Eigen::Matrix<double, 15, 15>* jacobian = 0);
 
   /**
    * @brief Propagates pose, speeds and biases with given IMU measurements.

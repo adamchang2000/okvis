@@ -98,9 +98,12 @@ void Map::printResidualBlockInfo(
 }
 
 // Obtain the Hessian block for a specific parameter block.
-void Map::getLhs(uint64_t parameterBlockId, Eigen::MatrixXd& H) {
+Eigen::Matrix3d Map::getLhs(uint64_t parameterBlockId) {
   OKVIS_ASSERT_TRUE_DBG(Exception,parameterBlockExists(parameterBlockId),"parameter block not in map.");
   ResidualBlockCollection res = residuals(parameterBlockId);
+
+  Eigen::Matrix3d H;
+
   H.setZero();
   for (size_t i = 0; i < res.size(); ++i) {
 
@@ -153,6 +156,7 @@ void Map::getLhs(uint64_t parameterBlockId, Eigen::MatrixXd& H) {
     delete[] jacobiansRaw;
     delete[] jacobiansMinimalRaw;
   }
+  return H;
 }
 
 // Check a Jacobian with numeric differences.

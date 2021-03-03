@@ -131,7 +131,7 @@ class Map {
    * @param[in] parameterBlockId Parameter block ID of interest.
    * @param[out] H the output Hessian block.
    */
-  void getLhs(uint64_t parameterBlockId, Eigen::MatrixXd& H);
+  Eigen::Matrix3d getLhs(uint64_t parameterBlockId);
 
   /// @name add/remove
   /// @{
