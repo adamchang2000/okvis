@@ -11,6 +11,8 @@ set(OKVIS_VERSION
 
 set(CMAKE_BUILD_TYPE Release)
 
+add_definitions(-DEIGEN_DONT_ALIGN)
+add_definitions(-DEIGEN_DONT_VECTORIZE)
 
 # options for build configuration
 option (USE_SYSTEM_BRISK
@@ -18,7 +20,7 @@ option (USE_SYSTEM_BRISK
 option (USE_SYSTEM_CERES
         "Use ceres via find_package rather than downloading it as part of okvis" ON) 
 option (BUILD_APPS
-        "Builds a demo app (which requires boost)" OFF) 
+        "Builds a demo app (which requires boost)" ON) 
 option (BUILD_TESTS
         "Builds all gtests" OFF) 
 SET(N_CORES 3 CACHE STRING "Using N number of cores for parallel build")
