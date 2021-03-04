@@ -246,8 +246,7 @@ bool ThreadedKFVio::addImage(const okvis::Time & stamp, size_t cameraIndex,
   }
   lastAddedImageTimestamp_ = stamp;
 
-  std::shared_ptr<okvis::CameraMeasurement> frame = std::make_shared<
-      okvis::CameraMeasurement>();
+  std::shared_ptr<okvis::CameraMeasurement> frame(new okvis::CameraMeasurement());
   frame->measurement.image = image;
   frame->timeStamp = stamp;
   frame->sensorId = cameraIndex;
