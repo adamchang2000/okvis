@@ -740,9 +740,6 @@ bool VioParametersReader::getCalibrationViaConfig(
     }
   }
 
-  std::cout << calibrations[0].principalPoint << std::endl;
-  std::cout << calibrations[1].principalPoint << std::endl;
-
   // printf("leaving cliabrationaviaconfig\n");
   // fflush(stdout);
 
