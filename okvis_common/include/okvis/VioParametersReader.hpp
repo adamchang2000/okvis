@@ -101,17 +101,12 @@ class VioParametersReader{
 
   /// @brief Struct that contains all the camera calibration information.
   struct CameraCalibration {
-    CameraCalibration() {
-      imageDimension = std::allocate_shared<Eigen::Vector2d>(Eigen::aligned_allocator<Eigen::Vector2d>());
-      distortionCoefficients = std::allocate_shared<Eigen::VectorXd>(Eigen::aligned_allocator<Eigen::VectorXd>());
-      focalLength = std::allocate_shared<Eigen::Vector2d>(Eigen::aligned_allocator<Eigen::Vector2d>());
-      principalPoint = std::allocate_shared<Eigen::Vector2d>(Eigen::aligned_allocator<Eigen::Vector2d>());
-    }
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     okvis::kinematics::Transformation T_SC;   ///< Transformation from camera to sensor (IMU) frame.
-    std::shared_ptr<Eigen::Vector2d> imageDimension;           ///< Image dimension. [pixels]
-    std::shared_ptr<Eigen::VectorXd> distortionCoefficients;   ///< Distortion Coefficients.
-    std::shared_ptr<Eigen::Vector2d> focalLength;              ///< Focal length.
-    std::shared_ptr<Eigen::Vector2d> principalPoint;           ///< Principal point.
+    Eigen::Vector2d imageDimension;           ///< Image dimension. [pixels]
+    Eigen::VectorXd distortionCoefficients;   ///< Distortion Coefficients.
+    Eigen::Vector2d focalLength;              ///< Focal length.
+    Eigen::Vector2d principalPoint;           ///< Principal point.
     std::string distortionType;               ///< Distortion type. ('radialtangential' 'plumb_bob' 'equdistant')
   };
 

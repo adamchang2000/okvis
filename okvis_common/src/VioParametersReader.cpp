@@ -652,14 +652,11 @@ bool VioParametersReader::getCalibrationViaConfig(
     std::vector<CameraCalibration> & calibrations,
     cv::FileNode cameraNode) const {
 
+  calibrations.clear();
   bool gotCalibration = false;
   // first check if calibration is available in config file
   if (cameraNode.isSeq()
      && cameraNode.size() > 0) {
-
-    // printf("getcalibrationviaconfig isseq\n");
-    // fflush(stdout);
-
     size_t camIdx = 0;
     for (cv::FileNodeIterator it = cameraNode.begin();
         it != cameraNode.end(); ++it) {
@@ -676,8 +673,6 @@ bool VioParametersReader::getCalibrationViaConfig(
           && (*it)["principal_point"].size() == 2) {
         LOG(INFO) << "Found calibration in configuration file for camera " << camIdx;
         gotCalibration = true;
-        // printf("gotCalibration is true\n");
-        // fflush(stdout);
       } else {
         LOG(WARNING) << "Found incomplete calibration in configuration file for camera " << camIdx
                      << ". Will not use the calibration from the configuration file.";
@@ -690,16 +685,10 @@ bool VioParametersReader::getCalibrationViaConfig(
     LOG(INFO) << "Did not find a calibration in the configuration file.";
 
   if (gotCalibration) {
-
-    // printf("getcalibrationviaconfig gotcalib\n");
-    // fflush(stdout);
-    
-
     for (cv::FileNodeIterator it = cameraNode.begin();
         it != cameraNode.end(); ++it) {
 
-      // printf("getcalibrationviaconfig calib\n");
-      // fflush(stdout);
+      CameraCalibration calib;
 
       cv::FileNode T_SC_node = (*it)["T_SC"];
       cv::FileNode imageDimensionNode = (*it)["image_dimension"];
@@ -707,38 +696,23 @@ bool VioParametersReader::getCalibrationViaConfig(
       cv::FileNode focalLengthNode = (*it)["focal_length"];
       cv::FileNode principalPointNode = (*it)["principal_point"];
 
-      CameraCalibration* calib = new CameraCalibration();
-
       // extrinsics
       Eigen::Matrix4d T_SC;
       T_SC << T_SC_node[0], T_SC_node[1], T_SC_node[2], T_SC_node[3], T_SC_node[4], T_SC_node[5], T_SC_node[6], T_SC_node[7], T_SC_node[8], T_SC_node[9], T_SC_node[10], T_SC_node[11], T_SC_node[12], T_SC_node[13], T_SC_node[14], T_SC_node[15];
-      calib->T_SC = okvis::kinematics::Transformation(T_SC);
+      calib.T_SC = okvis::kinematics::Transformation(T_SC);
 
-      *(calib->imageDimension) << imageDimensionNode[0], imageDimensionNode[1];
-      calib->distortionCoefficients->resize(distortionCoefficientNode.size());
+      calib.imageDimension << imageDimensionNode[0], imageDimensionNode[1];
+      calib.distortionCoefficients.resize(distortionCoefficientNode.size());
       for(size_t i=0; i<distortionCoefficientNode.size(); ++i) {
-        (*calib->distortionCoefficients)[i] = distortionCoefficientNode[i];
+        calib.distortionCoefficients[i] = distortionCoefficientNode[i];
       }
-      *(calib->focalLength) << focalLengthNode[0], focalLengthNode[1];
-      *(calib->principalPoint) << principalPointNode[0], principalPointNode[1];
-      calib->distortionType = (std::string)((*it)["distortion_type"]);;
+      calib.focalLength << focalLengthNode[0], focalLengthNode[1];
+      calib.principalPoint << principalPointNode[0], principalPointNode[1];
+      calib.distortionType = (std::string)((*it)["distortion_type"]);
 
-      // printf("getcalibrationviaconfig finishcalib\n");
-      // fflush(stdout);
-      calibrations.push_back(*calib);
-
-      // printf("getcalibrationviaconfig finishcalib2\n");
-      // fflush(stdout);
-
-      // printf("wat\n");
-      // fflush(stdout);
-
+      calibrations.push_back(calib);
     }
   }
-
-  // printf("leaving cliabrationaviaconfig\n");
-  // fflush(stdout);
-
   return gotCalibration;
 }
 
