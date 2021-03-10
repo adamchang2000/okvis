@@ -1130,7 +1130,7 @@ void ThreadedKFVio::optimizationLoop() {
       fflush(stdout);
 
       // create output frame
-      OutFrameData::Ptr outFrameDataPtr = std::allocate_shared<OutFrameData>(Eigen::aligned_allocator<OutFrameData>());
+      OutFrameData::Ptr outFrameDataPtr = std::shared_ptr<OutFrameData>(new OutFrameData());
 
       // add basic info
       outFrameDataPtr->id = frame_pairs->id();

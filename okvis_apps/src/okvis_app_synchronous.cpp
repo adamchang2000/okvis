@@ -66,7 +66,6 @@
 class PoseViewer
 {
  public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   constexpr static const double imageSize = 500.0;
   PoseViewer()
   {

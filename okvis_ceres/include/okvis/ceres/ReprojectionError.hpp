@@ -56,8 +56,6 @@ template<class GEOMETRY_TYPE>
 class ReprojectionError : public ReprojectionError2dBase
 {
  public:
-
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
 
   /// \brief Make the camera geometry type accessible.

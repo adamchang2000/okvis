@@ -60,7 +60,7 @@ else()
   message(STATUS "Building with build type '${CMAKE_BUILD_TYPE}'")
 endif()
 
-if(APPLE)
+#[[if(APPLE)
   # The clang compiler (on osx) is somehow much more strict
   # than the compilers on ubuntu and so this does not seem
   # possible on OSX just yet.
@@ -75,7 +75,11 @@ if(${CMAKE_HOST_SYSTEM_PROCESSOR} MATCHES "arm*")
 else()
   message(STATUS "Assuming SSE instructions available.")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mssse3")
-endif()
+endif()]]
+
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -Wall -std=c++17 -fPIC")
 
 get_directory_property(defs COMPILE_DEFINITIONS)
 

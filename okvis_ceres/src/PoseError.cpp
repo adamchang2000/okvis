@@ -46,7 +46,7 @@ namespace ceres {
 
 // Construct with measurement and information matrix.
 PoseError::PoseError(const okvis::kinematics::Transformation & measurement,
-                     const Eigen::Matrix<double, 6, 6, Eigen::DontAlign> & information) {
+                     const Eigen::Matrix<double, 6, 6> & information) {
   setMeasurement(measurement);
   setInformation(information);
 }
@@ -56,7 +56,7 @@ PoseError::PoseError(const okvis::kinematics::Transformation & measurement,
                      double translationVariance, double rotationVariance) {
   setMeasurement(measurement);
 
-  Eigen::Matrix<double, 6, 6, Eigen::DontAlign> information;
+  Eigen::Matrix<double, 6, 6> information;
   information.setZero();
   information.topLeftCorner<3, 3>() = Eigen::Matrix3d::Identity() * 1.0
       / translationVariance;

@@ -50,13 +50,10 @@ struct Pose3dNode {
     return "VERTEX_SE3:QUAT";
   }
 
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
 };
 
 
-typedef std::map<int, Pose3dNode, std::less<int>,
-                 Eigen::aligned_allocator<std::pair<const int, Pose3dNode> > >
+typedef std::map<int, Pose3dNode, std::less<int> >
     MapOfPoses;
 
 struct GravityNode {
@@ -68,11 +65,9 @@ struct GravityNode {
     return "GRAVITY";
   }
 
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
 };
 
-typedef std::vector<GravityNode, Eigen::aligned_allocator<GravityNode> >
+typedef std::vector<GravityNode >
     VectorOfGravityConstraints;
 
 // The constraint between two vertices in the pose graph. The constraint is the
@@ -94,11 +89,9 @@ struct Constraint3dNode {
   static std::string name() {
     return "EDGE_SE3:QUAT";
   }
-
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
-typedef std::vector<Constraint3dNode, Eigen::aligned_allocator<Constraint3dNode> >
+typedef std::vector<Constraint3dNode>
     VectorOfConstraints;
 
 

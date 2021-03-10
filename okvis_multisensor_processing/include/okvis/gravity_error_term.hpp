@@ -39,8 +39,6 @@ class PoseGraphGravityTerm {
         new PoseGraphGravityTerm(g_measured, sqrt_information));
   }
 
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
  private:
   // The "measurement" of the gravity vector
   const Eigen::Vector3d g_measured_;

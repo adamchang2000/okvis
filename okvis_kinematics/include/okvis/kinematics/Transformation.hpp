@@ -76,7 +76,6 @@ Eigen::Matrix3d rightJacobian(const Eigen::Vector3d & PhiVec);
 class Transformation
 {
  public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   /// \brief Default constructor: initialises a unit transformation.
   Transformation();
@@ -132,13 +131,13 @@ class Transformation
   Eigen::Matrix<double, 3, 4> T3x4() const;
 
   /// \brief The coefficients (parameters) as [r_AB,q_AB], q_AB as [x,y,z,w] (Eigen internal convention).
-  const Eigen::Matrix<double, 7, 1, Eigen::DontAlign> & coeffs() const
+  const Eigen::Matrix<double, 7, 1> & coeffs() const
   {
     return parameters_;
   }
 
   /// \brief The parameters (coefficients) as [r_AB,q_AB], q_AB as [x,y,z,w] (Eigen internal convention).
-  const Eigen::Matrix<double, 7, 1, Eigen::DontAlign> & parameters() const
+  const Eigen::Matrix<double, 7, 1> & parameters() const
   {
     return parameters_;
   }
@@ -226,7 +225,7 @@ class Transformation
  protected:
   /// \brief Update the caching of the rotation matrix.
   void updateC();
-  Eigen::Matrix<double, 7, 1, Eigen::DontAlign> parameters_;  ///< Concatenated parameters [r;q].
+  Eigen::Matrix<double, 7, 1> parameters_;  ///< Concatenated parameters [r;q].
   Eigen::Map<Eigen::Vector3d> r_;  ///< Translation {_A}r_{B}.
   Eigen::Map<Eigen::Quaterniond> q_;  ///< Quaternion q_{AB}.
   Eigen::Matrix3d C_; ///< The cached DCM C_{AB}.

@@ -52,7 +52,6 @@ namespace cameras {
 class DistortionBase
 {
  public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   /// \brief Destructor -- not doing anything
   virtual ~DistortionBase()

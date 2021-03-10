@@ -55,7 +55,6 @@ class HomogeneousPointError : public ::ceres::SizedCostFunction<
     3 /* number of residuals */, 4 /* size of first parameter */>,
     public ErrorInterface {
  public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
 
   /// \brief The base class type.
@@ -65,10 +64,10 @@ class HomogeneousPointError : public ::ceres::SizedCostFunction<
   static const int kNumResiduals = 3;
 
   /// \brief The information matrix type (3x3).
-  typedef Eigen::Matrix<double, 3, 3, Eigen::DontAlign> information_t;
+  typedef Eigen::Matrix<double, 3, 3> information_t;
 
   /// \brief The covariance matrix type (same as information).
-  typedef Eigen::Matrix<double, 3, 3, Eigen::DontAlign> covariance_t;
+  typedef Eigen::Matrix<double, 3, 3> covariance_t;
 
   /// \brief Default constructor.
   HomogeneousPointError();

@@ -62,9 +62,9 @@ class PoseError : public ::ceres::SizedCostFunction<6 /* number of residuals */,
   /// \brief The number of residuals (6).
   static const int kNumResiduals = 6;
 
-  typedef Eigen::Matrix<double, 6, 6, Eigen::DontAlign> information_t;
+  typedef Eigen::Matrix<double, 6, 6> information_t;
 
-  typedef Eigen::Matrix<double, 6, 6, Eigen::DontAlign> covariance_t;
+  typedef Eigen::Matrix<double, 6, 6> covariance_t;
 
   /// \brief Default constructor.
   PoseError() {}
@@ -73,7 +73,7 @@ class PoseError : public ::ceres::SizedCostFunction<6 /* number of residuals */,
   /// @param[in] measurement The measurement.
   /// @param[in] information The information (weight) matrix.
   PoseError(const okvis::kinematics::Transformation & measurement,
-            const Eigen::Matrix<double, 6, 6, Eigen::DontAlign> & information);
+            const Eigen::Matrix<double, 6, 6> & information);
 
   /// \brief Construct with measurement and variance.
   /// @param[in] measurement The measurement.
@@ -173,25 +173,22 @@ class PoseError : public ::ceres::SizedCostFunction<6 /* number of residuals */,
 
   struct test_struct {
   public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     Eigen::Vector2d test_mat2;
     Eigen::Vector3d test_mat3;
     Eigen::Matrix<double, 7, 1> test_mat21;
     Eigen::Vector3d test_mat31;
-    Eigen::Matrix<double, 4, 1, Eigen::DontAlign> test_mat4;
+    Eigen::Matrix<double, 4, 1> test_mat4;
   };
 
   struct test_struct testt;
 
   // weighting related
-  Eigen::Matrix<double, 6, 6, Eigen::DontAlign> information_; ///< The 6x6 information matrix.
-  Eigen::Matrix<double, 6, 6, Eigen::DontAlign> squareRootInformation_; ///< The 6x6 square root information matrix.
-  Eigen::Matrix<double, 6, 6, Eigen::DontAlign> covariance_; ///< The 6x6 covariance matrix.
+  Eigen::Matrix<double, 6, 6> information_; ///< The 6x6 information matrix.
+  Eigen::Matrix<double, 6, 6> squareRootInformation_; ///< The 6x6 square root information matrix.
+  Eigen::Matrix<double, 6, 6> covariance_; ///< The 6x6 covariance matrix.
 
   // the measurement
   okvis::kinematics::Transformation measurement_; ///< The pose measurement.
-public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 }  // namespace ceres

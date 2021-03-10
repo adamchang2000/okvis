@@ -64,7 +64,6 @@ template<class DISTORTION_T>
 class PinholeCamera : public CameraBase
 {
  public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   typedef DISTORTION_T distortion_t; ///< Makes the distortion type accessible.
 
   /// \brief Constructor that will figure out the type of distortion

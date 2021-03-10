@@ -266,7 +266,7 @@ bool Estimator::addStates(
     printf("the first pose error of death\n");
     fflush(stdout);
 
-    std::shared_ptr<ceres::PoseError > poseError = std::allocate_shared<ceres::PoseError>(Eigen::aligned_allocator<ceres::PoseError>(), T_WS, information);
+    std::shared_ptr<ceres::PoseError > poseError = std::shared_ptr<ceres::PoseError>(new ceres::PoseError(T_WS, information));
     /*auto id2= */ mapPtr_->addResidualBlock(poseError,NULL,poseParameterBlock);
     //mapPtr_->isJacobianCorrect(id2,1.0e-6);
 

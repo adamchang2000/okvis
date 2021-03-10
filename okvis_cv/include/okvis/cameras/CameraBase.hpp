@@ -60,7 +60,6 @@ namespace cameras {
 class CameraBase
 {
  public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   /// \class ProjectionStatus
   /// \brief Indicates what happened when applying any of the project functions.

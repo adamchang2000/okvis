@@ -141,7 +141,6 @@ typedef std::vector<Match> Matches;
  */
 struct MapPoint
 {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   /// \brief Default constructor. Point is at origin with quality 0.0 and ID 0.
   MapPoint()
@@ -172,17 +171,14 @@ struct MapPoint
   std::map<okvis::KeypointIdentifier, uint64_t> observations;   ///< Observations of this point.
 };
 
-typedef std::vector<MapPoint, Eigen::aligned_allocator<MapPoint> > MapPointVector;
-typedef std::map<uint64_t, MapPoint, std::less<uint64_t>,
-    Eigen::aligned_allocator<std::pair<const uint64_t,MapPoint> > > PointMap;
-typedef std::map<uint64_t, okvis::kinematics::Transformation, std::less<uint64_t>,
-    Eigen::aligned_allocator<std::pair<const uint64_t, okvis::kinematics::Transformation> > > TransformationMap;
+typedef std::vector<MapPoint> MapPointVector;
+typedef std::map<uint64_t, MapPoint, std::less<uint64_t>> PointMap;
+typedef std::map<uint64_t, okvis::kinematics::Transformation, std::less<uint64_t> > TransformationMap;
 
 
 /// \brief For convenience to pass associations - also contains the 3d points.
 struct Observation
 {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   /**
    * @brief Constructor.
@@ -232,16 +228,15 @@ struct Observation
   uint64_t landmarkId;  ///< unique landmark ID
   bool isInitialized;   ///< Initialisation status of landmark
 };
-typedef std::vector<Observation, Eigen::aligned_allocator<Observation> > ObservationVector;
+typedef std::vector<Observation> ObservationVector;
 
 /// \brief For convenience to output information to other systems
 struct OutFrameData {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef std::shared_ptr<OutFrameData> Ptr;
     Time stamp;                          ///< Timestamp of the optimized/propagated pose.
     kinematics::Transformation T_KS;     ///< The pose relative to the current keyframe. 
     kinematics::Transformation T_WS;     ///< The pose relative VIO Origin.
-    Eigen::Matrix<double, 9, 1, Eigen::DontAlign> speedAndBiases;         ///< The speeds and biases.
+    Eigen::Matrix<double, 9, 1> speedAndBiases;         ///< The speeds and biases.
     //Eigen::Matrix<double, 3, 1> omega_S;        ///< The rotational speed of the sensor.
     /// The relative transformation of the cameras to the sensor (IMU) frame
     //std::vector<okvis::kinematics::Transformation,

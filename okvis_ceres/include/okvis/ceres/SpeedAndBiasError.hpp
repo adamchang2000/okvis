@@ -56,8 +56,6 @@ class SpeedAndBiasError : public ::ceres::SizedCostFunction<
     9 /* size of first parameter */>,
     public ErrorInterface {
  public:
-
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
 
   /// \brief The base class type.
@@ -67,10 +65,10 @@ class SpeedAndBiasError : public ::ceres::SizedCostFunction<
   static const int kNumResiduals = 9;
 
   /// \brief The information matrix type (9x9).
-  typedef Eigen::Matrix<double, 9, 9, Eigen::DontAlign> information_t;
+  typedef Eigen::Matrix<double, 9, 9> information_t;
 
   /// \brief The covariance matrix type (same as information).
-  typedef Eigen::Matrix<double, 9, 9, Eigen::DontAlign> covariance_t;
+  typedef Eigen::Matrix<double, 9, 9> covariance_t;
 
   /// \brief Default constructor.
   SpeedAndBiasError();

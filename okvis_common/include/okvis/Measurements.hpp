@@ -65,7 +65,6 @@ namespace okvis {
  */
 template<class MEASUREMENT_T>
 struct Measurement {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   okvis::Time timeStamp;      ///< Measurement timestamp
   MEASUREMENT_T measurement;  ///< Actual measurement.
   int sensorId = -1;          ///< Sensor ID. E.g. camera index in a multicamera setup
@@ -90,7 +89,6 @@ struct Measurement {
 
 /// \brief IMU measurements. For now assume they are synchronized:
 struct ImuSensorReadings {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   /// \brief Default constructor.
   ImuSensorReadings()
       : gyroscopes(),
@@ -120,7 +118,6 @@ struct DepthCameraData {
 
 /// \brief Position measurement.
 struct PositionReading {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Eigen::Vector3d position;           ///< Position measurement.
   Eigen::Vector3d positionOffset;     ///< Position offset.
   Eigen::Matrix3d positionCovariance; ///< Measurement covariance.
@@ -128,7 +125,6 @@ struct PositionReading {
 
 /// \brief GPS position measurement.
 struct GpsPositionReading {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   double lat_wgs84;   ///< Latitude in WGS84 coordinate system.
   double lon_wgs84;   ///< Longitude in WGS84 coordiante system.
   double alt_wgs84;   ///< Altitude in WGS84 coordinate system.
@@ -138,21 +134,18 @@ struct GpsPositionReading {
 
 /// \brief Magnetometer measurement.
 struct MagnetometerReading {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   ///< The magnetic flux density measurement. [uT]
   Eigen::Vector3d fluxDensity;
 };
 
 /// \brief Barometer measurement.
 struct BarometerReading {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   double pressure;    ///< Pressure measurement. [Pa]
   double temperature; ///< Temperature. [K]
 };
 
 /// \brief Differential pressure sensor measurement.
 struct DifferentialPressureReading {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   double pressure;  ///< Pressure measurement. [Pa]
   Eigen::Vector3d acceleration_B;  ///< Acceleration in B-frame.
 };
@@ -160,7 +153,7 @@ struct DifferentialPressureReading {
 // this is how we store raw measurements before more advanced filling into
 // data structures happens:
 typedef Measurement<ImuSensorReadings> ImuMeasurement;
-typedef std::vector<ImuMeasurement, Eigen::aligned_allocator<ImuMeasurement> > ImuMeasurementVector;
+typedef std::vector<ImuMeasurement> ImuMeasurementVector;
 /// \brief Camera measurement.
 struct CameraData {
   cv::Mat image;  ///< Image.
@@ -184,16 +177,13 @@ typedef Measurement<FrameData> FrameMeasurement;
 typedef Measurement<DepthCameraData> DepthCameraMeasurement;
 
 typedef Measurement<PositionReading> PositionMeasurement;
-typedef std::vector<PositionMeasurement,
-    Eigen::aligned_allocator<PositionMeasurement> > PositionMeasurementVector;
+typedef std::vector<PositionMeasurement> PositionMeasurementVector;
 
 typedef Measurement<GpsPositionReading> GpsPositionMeasurement;
-typedef std::vector<GpsPositionMeasurement,
-    Eigen::aligned_allocator<GpsPositionMeasurement> > GpsPositionMeasurementVector;
+typedef std::vector<GpsPositionMeasurement> GpsPositionMeasurementVector;
 
 typedef Measurement<MagnetometerReading> MagnetometerMeasurement;
-typedef std::vector<MagnetometerMeasurement,
-    Eigen::aligned_allocator<MagnetometerMeasurement> > MagnetometerMeasurementVector;
+typedef std::vector<MagnetometerMeasurement> MagnetometerMeasurementVector;
 
 typedef Measurement<BarometerReading> BarometerMeasurement;
 

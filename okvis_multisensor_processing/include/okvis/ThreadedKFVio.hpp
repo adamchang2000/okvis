@@ -88,8 +88,6 @@ namespace okvis {
  */
 class ThreadedKFVio : public VioInterface {
  public:
-
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
 
 #ifdef DEACTIVATE_TIMERS
@@ -296,14 +294,12 @@ class ThreadedKFVio : public VioInterface {
   ///        It is also used for publishing poses that have been propagated with the IMU
   ///        measurements.
   struct OptimizationResults {
-		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     okvis::Time stamp;                          ///< Timestamp of the optimized/propagated pose.
     okvis::kinematics::Transformation T_WS;     ///< The pose.
     okvis::SpeedAndBias speedAndBiases;         ///< The speeds and biases.
     Eigen::Matrix<double, 3, 1> omega_S;        ///< The rotational speed of the sensor.
     /// The relative transformation of the cameras to the sensor (IMU) frame
-    std::vector<okvis::kinematics::Transformation,
-        Eigen::aligned_allocator<okvis::kinematics::Transformation> > vector_of_T_SCi;
+    std::vector<okvis::kinematics::Transformation > vector_of_T_SCi;
     okvis::MapPointVector landmarksVector;      ///< Vector containing the current landmarks.
     okvis::MapPointVector transferredLandmarks; ///< Vector of the landmarks that have been marginalized out.
     bool onlyPublishLandmarks;                  ///< Boolean to signalise the publisherLoop() that only the landmarks should be published
