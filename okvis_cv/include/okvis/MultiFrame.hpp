@@ -55,7 +55,6 @@ class MultiFrame
 {
  public:
 
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
 
   /// \brief Default constructor
@@ -263,7 +262,7 @@ class MultiFrame
   }
 
   
-  std::vector<Frame, Eigen::aligned_allocator<Frame>> frames_;  ///< the individual frames
+  std::vector<Frame> frames_;  ///< the individual frames
 
  protected:
   okvis::Time timestamp_;  ///< the frame timestamp

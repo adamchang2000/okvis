@@ -113,17 +113,11 @@ void Map::getLhs(uint64_t parameterBlockId, Eigen::MatrixXd& H) {
 
     double** jacobiansRaw = new double*[pars.size()];
     std::vector<
-        Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
-        Eigen::aligned_allocator<
-            Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic,
-                Eigen::RowMajor> > > jacobiansEigen(pars.size());
+        Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> > jacobiansEigen(pars.size());
 
     double** jacobiansMinimalRaw = new double*[pars.size()];
     std::vector<
-        Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
-        Eigen::aligned_allocator<
-            Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic,
-                Eigen::RowMajor> > > jacobiansMinimalEigen(pars.size());
+        Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> > jacobiansMinimalEigen(pars.size());
 
     int J = -1;
     for (size_t j = 0; j < pars.size(); ++j) {
@@ -164,24 +158,16 @@ bool Map::isJacobianCorrect(::ceres::ResidualBlockId residualBlockId,
 
   // set up data structures for storage
   std::vector<
-      Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
-      Eigen::aligned_allocator<
-          Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> > > J(
+      Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>> J(
       parametersBlocks.size());
   std::vector<
-      Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
-      Eigen::aligned_allocator<
-          Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> > > J_min(
+      Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>> J_min(
       parametersBlocks.size());
   std::vector<
-      Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
-      Eigen::aligned_allocator<
-          Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> > > J_numDiff(
+      Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>> J_numDiff(
       parametersBlocks.size());
   std::vector<
-      Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
-      Eigen::aligned_allocator<
-          Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> > > J_min_numDiff(
+      Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>> J_min_numDiff(
       parametersBlocks.size());
   double **parameters, **jacobians, **jacobiansMinimal;
   parameters = new double*[parametersBlocks.size()];

@@ -351,14 +351,21 @@ bool Estimator::addLandmark(uint64_t landmarkId,
     return false;
   }
 
+  std::lock_guard<std::mutex> l(statesMutex_);
+
   // remember
   double dist = std::numeric_limits<double>::max();
   if(fabs(landmark[3])>1.0e-8){
     dist = (landmark/landmark[3]).head<3>().norm(); // euclidean distance
   }
-  landmarksMap_.insert(
-      std::pair<uint64_t, MapPoint>(
-          landmarkId, MapPoint(landmarkId, landmark, 0.0, dist)));
+  MapPoint mp(landmarkId, landmark, 0.0, dist);
+  std::pair<uint64_t, MapPoint> mp_pair(landmarkId, mp);
+
+  landmarksMap_.insert(mp_pair);
+
+  // landmarksMap_.insert(
+  //     std::pair<uint64_t, MapPoint>(
+  //         landmarkId, MapPoint(landmarkId, landmark, 0.0, dist)));
   OKVIS_ASSERT_TRUE_DBG(Exception, isLandmarkAdded(landmarkId), "bug: inconsistend landmarkdMap_ with mapPtr_.");
   return true;
 }

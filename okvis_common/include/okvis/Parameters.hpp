@@ -103,7 +103,6 @@ struct ExtrinsicsEstimationParameters
  *
  */
 struct ImuParameters{
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   okvis::kinematics::Transformation T_BS; ///< Transformation from Body frame to IMU (sensor frame S).
   double a_max;  ///< Accelerometer saturation. [m/s^2]
   double g_max;  ///< Gyroscope saturation. [rad/s]
@@ -126,7 +125,6 @@ struct ImuParameters{
  *
  */
 struct MagnetometerParameters{
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   double stdev; ///< Measurement (white noise part) standard deviation. [uT]
   double priorStdev; ///< Prior. [uT]
   double tau;        ///< Reversion time constant of bias [s]
@@ -141,7 +139,6 @@ struct MagnetometerParameters{
  *
  */
 struct GpsParameters{
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Eigen::Vector3d antennaOffset; ///< The position offset of the antenna in body (B) coordinates.
 };
 
@@ -152,7 +149,6 @@ struct GpsParameters{
  *
  */
 struct PositionSensorParameters{
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Eigen::Vector3d positionSensorOffset; ///< The position offset of the position sensor in body (B) coordinates.
   bool isLeveled; ///< If true, the position sensor measurements are assumed to be world z up (exactly, i.e. only yaw gets estimated).
 };
@@ -164,7 +160,6 @@ struct PositionSensorParameters{
  *
  */
 struct MagneticEnuZParameters{
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   double priorStdev;  ///< ENU z-component bias prior. [uT]
   double sigma_c;     ///< ENU z-component noise density. [uT/s/sqrt(Hz)]
   double tau;         ///< Reversion time constant of ENU z-component. [s]
@@ -202,7 +197,6 @@ struct QffParameters{
  *
  */
 struct DifferentialPressureSensorParameters{
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   double differentialPressureStdev; ///< Measurement (white noise part) standard deviation. [Pa]
   /// Measurement (white noise part) standard deviation [m/s^2]
   /// Be conservative, this has to account for model uncertainties, too...
@@ -270,7 +264,6 @@ struct LoopClosureParameters {
 
 /// @brief Some publishing parameters.
 struct PublishingParameters {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   int publishRate = 200;  ///< Maximum publishing rate. [Hz]
   bool publishLandmarks = true; ///< Select, if you want to publish landmarks at all.
   float landmarkQualityThreshold = 1.0e-5; ///< Quality threshold under which landmarks are not published. Between 0 and 1.
@@ -284,7 +277,6 @@ struct PublishingParameters {
 
 /// @brief Struct to combine all parameters and settings.
 struct VioParameters {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Optimization optimization;    ///< Optimization parameters.
   Visualization visualization;  ///< Visualization parameters.
   SensorsInformation sensors_information; ///< Information on camera and IMU setup.

@@ -278,16 +278,12 @@ bool MarginalizationError::addResidualBlock(
 
   double** jacobiansRaw = new double*[parameters.size()];
   std::vector<
-      Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
-      Eigen::aligned_allocator<
-          Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> > > jacobiansEigen(
+      Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> > jacobiansEigen(
       parameters.size());
 
   double** jacobiansMinimalRaw = new double*[parameters.size()];
   std::vector<
-      Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
-      Eigen::aligned_allocator<
-          Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> > > jacobiansMinimalEigen(
+      Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> > jacobiansMinimalEigen(
       parameters.size());
 
   for (size_t i = 0; i < parameters.size(); ++i) {
@@ -655,9 +651,9 @@ bool MarginalizationError::marginalizeOut(
     H_.resize(U.rows(), U.cols());
     H_ = U;
     const size_t numBlocks = V.cols() / sdim;
-    std::vector<Eigen::MatrixXd, Eigen::aligned_allocator<Eigen::MatrixXd>> delta_H(
+    std::vector<Eigen::MatrixXd> delta_H(
         numBlocks);
-    std::vector<Eigen::VectorXd, Eigen::aligned_allocator<Eigen::VectorXd>> delta_b(
+    std::vector<Eigen::VectorXd> delta_b(
         numBlocks);
     Eigen::MatrixXd M1(W.rows(), W.cols());
     size_t idx = 0;

@@ -61,7 +61,6 @@ namespace cameras {
 class NCameraSystem
 {
  public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
 
   /// The enumeration of the currently supported distortion types.

@@ -78,7 +78,6 @@ class Estimator : public VioBackendInterface
 {
  public:
   OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   /**
    * @brief The default constructor.
@@ -564,9 +563,8 @@ class Estimator : public VioBackendInterface
   mutable std::mutex statesMutex_;  ///< Regulate access of landmarksMap_.
 
   // parameters
-  std::vector<okvis::ExtrinsicsEstimationParameters,
-      Eigen::aligned_allocator<okvis::ExtrinsicsEstimationParameters> > extrinsicsEstimationParametersVec_; ///< Extrinsics parameters.
-  std::vector<okvis::ImuParameters, Eigen::aligned_allocator<okvis::ImuParameters> > imuParametersVec_; ///< IMU parameters.
+  std::vector<okvis::ExtrinsicsEstimationParameters> extrinsicsEstimationParametersVec_; ///< Extrinsics parameters.
+  std::vector<okvis::ImuParameters> imuParametersVec_; ///< IMU parameters.
 
   // loss function for reprojection errors
   std::shared_ptr< ::ceres::LossFunction> cauchyLossFunctionPtr_; ///< Cauchy loss.

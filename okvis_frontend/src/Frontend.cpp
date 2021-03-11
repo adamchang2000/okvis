@@ -312,7 +312,7 @@ bool Frontend::doWeNeedANewKeyframe(
     // get the hull of all keypoints in current frame
     std::vector<cv::Point2f> frameBPoints, frameBHull;
     std::vector<cv::Point2f> frameBMatches, frameBMatchesHull;
-    std::vector<Eigen::Vector4d, Eigen::aligned_allocator<Eigen::Vector4d> > frameBLandmarks;
+    std::vector<Eigen::Vector4d> frameBLandmarks;
 
     const size_t numB = currentFrame->numKeypoints(im);
     frameBPoints.reserve(numB);

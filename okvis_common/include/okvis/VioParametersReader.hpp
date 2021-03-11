@@ -59,7 +59,6 @@ namespace okvis {
  */
 class VioParametersReader{
  public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
 
   /// \brief The default constructor.
@@ -102,7 +101,6 @@ class VioParametersReader{
 
   /// @brief Struct that contains all the camera calibration information.
   struct CameraCalibration {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     okvis::kinematics::Transformation T_SC;   ///< Transformation from camera to sensor (IMU) frame.
     Eigen::Vector2d imageDimension;           ///< Image dimension. [pixels]
     Eigen::VectorXd distortionCoefficients;   ///< Distortion Coefficients.
@@ -135,7 +133,7 @@ class VioParametersReader{
    * @return True if reading of the calibration was successful.
    */
   virtual bool getCameraCalibration(
-      std::vector<CameraCalibration,Eigen::aligned_allocator<CameraCalibration>> & calibrations,
+      std::vector<CameraCalibration> & calibrations,
       cv::FileStorage& configurationFile);
 
   /**
@@ -145,7 +143,7 @@ class VioParametersReader{
    * @return True if reading and parsing of calibration was successful.
    */
   bool getCalibrationViaConfig(
-      std::vector<CameraCalibration,Eigen::aligned_allocator<CameraCalibration>> & calibrations,
+      std::vector<CameraCalibration> & calibrations,
       cv::FileNode cameraNode) const;
 
   /**
@@ -154,7 +152,7 @@ class VioParametersReader{
    * @return True if successful.
    */
   bool getCalibrationViaVisensorAPI(
-      std::vector<CameraCalibration,Eigen::aligned_allocator<CameraCalibration>> & calibrations) const;
+      std::vector<CameraCalibration> & calibrations) const;
 
 };
 

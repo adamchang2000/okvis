@@ -116,7 +116,6 @@ class PoseGraph3dErrorTerm {
         new PoseGraph3dErrorTerm(t_ab_measured, sqrt_information));
   }
 
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
  private:
   // The measurement for the position of B relative to A in the A frame.

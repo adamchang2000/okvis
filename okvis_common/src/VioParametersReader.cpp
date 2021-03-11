@@ -330,7 +330,7 @@ void VioParametersReader::readConfigFile(const std::string& filename) {
   }
 
   // camera calibration
-  std::vector<CameraCalibration,Eigen::aligned_allocator<CameraCalibration>> calibrations;
+  std::vector<CameraCalibration> calibrations;
   if(!getCameraCalibration(calibrations, file))
     LOG(FATAL) << "Did not find any calibration!";
 
@@ -422,7 +422,7 @@ void VioParametersReader::readConfigFile(const std::string& filename) {
 //getCalibrationViaConfig
   {
     // additional camera calibration
-    std::vector<CameraCalibration,Eigen::aligned_allocator<CameraCalibration>> additional_calibrations;
+    std::vector<CameraCalibration> additional_calibrations;
     if(getCalibrationViaConfig(additional_calibrations, file["additional_cameras"])){
       size_t camIdx = 0;
       for (size_t i = 0; i < additional_calibrations.size(); ++i) {
@@ -619,7 +619,7 @@ bool VioParametersReader::parseBoolean(cv::FileNode node, bool& val) const {
 }
 
 bool VioParametersReader::getCameraCalibration(
-    std::vector<CameraCalibration,Eigen::aligned_allocator<CameraCalibration>> & calibrations,
+    std::vector<CameraCalibration> & calibrations,
     cv::FileStorage& configurationFile) {
 
   bool success = getCalibrationViaConfig(calibrations, configurationFile["cameras"]);
@@ -646,7 +646,7 @@ bool VioParametersReader::getCameraCalibration(
 
 // Get the camera calibration via the configuration file.
 bool VioParametersReader::getCalibrationViaConfig(
-    std::vector<CameraCalibration,Eigen::aligned_allocator<CameraCalibration>> & calibrations,
+    std::vector<CameraCalibration> & calibrations,
     cv::FileNode cameraNode) const {
 
   calibrations.clear();
@@ -715,7 +715,7 @@ bool VioParametersReader::getCalibrationViaConfig(
 
 // Get the camera calibrations via the visensor API.
 bool VioParametersReader::getCalibrationViaVisensorAPI(
-    std::vector<CameraCalibration,Eigen::aligned_allocator<CameraCalibration>> & calibrations) const{
+    std::vector<CameraCalibration> & calibrations) const{
 #ifdef HAVE_LIBVISENSOR
   if (viSensor == nullptr) {
     LOG(ERROR) << "Tried to get calibration from the sensor. But the sensor is not set up.";

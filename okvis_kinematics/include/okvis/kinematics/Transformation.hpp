@@ -76,7 +76,6 @@ Eigen::Matrix3d rightJacobian(const Eigen::Vector3d & PhiVec);
 class Transformation
 {
  public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   /// \brief Default constructor: initialises a unit transformation.
   Transformation();

@@ -53,7 +53,6 @@ namespace cameras {
 class EquidistantDistortion : public DistortionBase
 {
  public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   /// \brief The default constructor with all zero ki
   inline EquidistantDistortion();

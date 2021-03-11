@@ -11,14 +11,13 @@ set(OKVIS_VERSION
 
 set(CMAKE_BUILD_TYPE Release)
 
-
 # options for build configuration
 option (USE_SYSTEM_BRISK
         "Use brisk via find_package rather than downloading it as part of okvis" ON) 
 option (USE_SYSTEM_CERES
         "Use ceres via find_package rather than downloading it as part of okvis" ON) 
 option (BUILD_APPS
-        "Builds a demo app (which requires boost)" OFF) 
+        "Builds a demo app (which requires boost)" ON) 
 option (BUILD_TESTS
         "Builds all gtests" OFF) 
 SET(N_CORES 3 CACHE STRING "Using N number of cores for parallel build")
@@ -58,14 +57,21 @@ else()
   message(STATUS "Building with build type '${CMAKE_BUILD_TYPE}'")
 endif()
 
-if(APPLE)
+#[[if(APPLE)
   # The clang compiler (on osx) is somehow much more strict
   # than the compilers on ubuntu and so this does not seem
   # possible on OSX just yet.
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -Wall -std=c++11 -fPIC")
 else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -Wall -std=c++11 -fPIC")
-endif()
+endif()]]
+
+message(STATUS "using c++17")
+add_definitions(-DEIGEN_DONT_ALIGN=1)
+add_definitions(-DEIGEN_DONT_VECTORIZE=1)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -Wall -std=c++17 -fPIC")
+set(CMAKE_CXX_STANDARD 17)
+
 
 if(${CMAKE_HOST_SYSTEM_PROCESSOR} MATCHES "arm*")
   message(STATUS "ARM processor detected, will attempt to use NEON.")

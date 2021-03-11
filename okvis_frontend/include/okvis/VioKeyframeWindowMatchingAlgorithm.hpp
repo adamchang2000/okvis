@@ -61,7 +61,6 @@ namespace okvis {
 template<class CAMERA_GEOMETRY_T>
 class VioKeyframeWindowMatchingAlgorithm : public okvis::MatchingAlgorithm {
  public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
 
   typedef CAMERA_GEOMETRY_T camera_geometry_t;

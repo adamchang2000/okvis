@@ -57,7 +57,6 @@ class SpeedAndBiasError : public ::ceres::SizedCostFunction<
     public ErrorInterface {
  public:
 
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
 
   /// \brief The base class type.
